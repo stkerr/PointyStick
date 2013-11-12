@@ -73,12 +73,14 @@ LIB_ROOTS :=
 # This section contains the build rules for all binaries that have special build rules.
 # See makefile.default.rules for the default build rules.
 
-
+ifeq ($(OS),Windows_NT)
+else
 UNAME := $(shell uname)
 ifeq ($(UNAME), Darwin)
 # This is needed to make Mac OS X 10.9 build successfully, since Clang changed the
 # standard library, so revert to the GNU one
 TOOL_LDFLAGS += -stdlib=libstdc++
+endif
 endif
 
 SRCS := $(wildcard src/*.cpp)
