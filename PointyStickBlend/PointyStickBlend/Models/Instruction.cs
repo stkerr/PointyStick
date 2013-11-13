@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
+using System.Windows.Media;
 
 namespace PointyStickBlend.Models
 {
@@ -43,11 +45,25 @@ namespace PointyStickBlend.Models
             set { instruction_count = value; }
         }
 
+        UInt32 thread_id;
+        public UInt32 Thread_id
+        {
+            get { return thread_id; }
+            set { thread_id = value; }
+        }
+
         string library_name;
         public string Library_name
         {
             get { return library_name; }
             set { library_name = value; }
+        }
+
+        Brush desired_color;
+        public Brush Desired_color
+        {
+            get { return desired_color; }
+            set { desired_color = value; }
         }
     }
 }

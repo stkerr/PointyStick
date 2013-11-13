@@ -12,8 +12,5 @@ namespace PointyStickBlend.Models
         public InstructionModel() : base() { }
         public InstructionModel(List<Instruction> list) : base(list) { }
         public InstructionModel(IEnumerable<Instruction> collection) : base(collection) { }
-
-    }
-    
-    
+    }   
 }

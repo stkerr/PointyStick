@@ -6,20 +6,40 @@
     xmlns:local="clr-namespace:PointyStickBlend" 
     Title="MainWindow"
     Width="640" Height="480">
-    
     <Grid x:Name="LayoutRoot" Background="White">
-    <TabControl HorizontalContentAlignment="Stretch" VerticalContentAlignment="Stretch" ScrollViewer.VerticalScrollBarVisibility="Disabled">
-        <TabItem Header="TabItem">
-            <Grid Background="#FFE5E5E5">
-                    <local:MainView Margin="0,0,10,10" >
-                    </local:MainView>
+        <DockPanel LastChildFill="True">
+            <Menu DockPanel.Dock="Top">
+                <MenuItem Header="_File">
+                    <MenuItem Header="Exit" Click="exit_application" />
+                </MenuItem>
+                <MenuItem Header="_Data">
+                    <MenuItem Header="Load Library File" Click="load_tracefile" />
+                </MenuItem>
+            </Menu>
+            <Grid DataContext="{StaticResource instruction_view_model}">
+                <DataGrid Margin="1,0,-1,0" ItemsSource="{Binding Model}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Instruction_count}" ClipboardContentBinding="{x:Null}" Header="Instruction Count"/>
+                        <DataGridTextColumn Binding="{Binding Address_disk, StringFormat={}{0:x8}}" ClipboardContentBinding="{x:Null}" Header="Disk Address "/>
+                        <DataGridTextColumn Binding="{Binding Address_execution, StringFormat={}{0:x8}}" ClipboardContentBinding="{x:Null}" Header="Execution Address"/>
+                        <DataGridTextColumn Binding="{Binding Depth}" ClipboardContentBinding="{x:Null}" Header="Depth"/>
+                        <DataGridTextColumn Binding="{Binding Library_name}" ClipboardContentBinding="{x:Null}" Header="Library Name"/>
+                        <DataGridTextColumn Binding="{Binding Thread_id}" ClipboardContentBinding="{x:Null}" Header="Thread ID"/>
+                        <DataGridTextColumn Binding="{Binding Time}" ClipboardContentBinding="{x:Null}" Header="Time"/>
+                    </DataGrid.Columns>
+
+                    <DataGrid.CellStyle>
+                        <Style TargetType="DataGridCell">
+                            <Setter Property="Background" Value="{Binding Desired_color}" />
+                            <Style.Triggers>
+                                <Trigger Property="IsSelected" Value="True">
+                                    <Setter Property="Background" Value="Black" />
+                                </Trigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGrid.CellStyle>
+                </DataGrid>
             </Grid>
-        </TabItem>
-        <TabItem Header="TabItem">
-            <Grid Margin="0">
-                    <local:InstructionView Margin="0" DataContext="{StaticResource instruction_view_model}" />
-            </Grid>
-        </TabItem>
-    </TabControl>
+        </DockPanel>
     </Grid>
 </Window>

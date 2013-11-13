@@ -6,6 +6,40 @@
     xmlns:InstructionViewModel="clr-namespace:PointyStickBlend"
     >
     <Application.Resources>
-        <InstructionViewModel:InstructionViewModel x:Name="instruction_view_model" x:Key="instruction_view_model" />
+        <ResourceDictionary>
+            <InstructionViewModel:InstructionViewModel x:Name="instruction_view_model" x:Key="instruction_view_model" />
+            <x:Array Type="SolidColorBrush" x:Name="color_palette" x:Key="color_palette">
+                <SolidColorBrush Color="#f0e8cd" />
+                <SolidColorBrush Color="#dbd5b9" />
+                <SolidColorBrush Color="#c0ba99" />
+                <SolidColorBrush Color="#feebc9" />
+                <SolidColorBrush Color="#fdcaa2" />
+                <SolidColorBrush Color="#fca985" />
+                <SolidColorBrush Color="#e1ffb0" />
+                <SolidColorBrush Color="#fffa81" />
+                <SolidColorBrush Color="#ffed51" />
+                <SolidColorBrush Color="#e0f3b0" />
+                <SolidColorBrush Color="#bfe476" />
+                <SolidColorBrush Color="#85ca5d" />
+                <SolidColorBrush Color="#cfeccf" />
+                <SolidColorBrush Color="#b5e1ae" />
+                <SolidColorBrush Color="#91d290" />
+                <SolidColorBrush Color="#b3e2dd" />
+                <SolidColorBrush Color="#86cfbe" />
+                <SolidColorBrush Color="#48b5a3" />
+                <SolidColorBrush Color="#ccecef" />
+                <SolidColorBrush Color="#99cedf" />
+                <SolidColorBrush Color="#6fb7d6" />
+                <SolidColorBrush Color="#bfd5e8" />
+                <SolidColorBrush Color="#94a8d0" />
+                <SolidColorBrush Color="#7589bf" />
+                <SolidColorBrush Color="#ddd4e8" />
+                <SolidColorBrush Color="#c1b3d7" />
+                <SolidColorBrush Color="#a589c1" />
+                <SolidColorBrush Color="#fddeee" />
+                <SolidColorBrush Color="#fbb6d1" />
+                <SolidColorBrush Color="#f98cb6" />
+            </x:Array>
+        </ResourceDictionary>        
     </Application.Resources>
 </Application>
