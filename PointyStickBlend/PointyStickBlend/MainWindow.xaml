@@ -13,7 +13,8 @@
                     <MenuItem Header="Exit" Click="exit_application" />
                 </MenuItem>
                 <MenuItem Header="_Data">
-                    <MenuItem Header="Load Library File" Click="load_tracefile" />
+                    <MenuItem Header="Load Instruction File" Click="load_instruction_tracefile" />
+                    <MenuItem Header="Load Library File" Click="load_library_tracefile" />
                 </MenuItem>
             </Menu>
             <Grid DataContext="{StaticResource instruction_view_model}">
@@ -26,6 +27,7 @@
                         <DataGridTextColumn Binding="{Binding Library_name}" ClipboardContentBinding="{x:Null}" Header="Library Name"/>
                         <DataGridTextColumn Binding="{Binding Thread_id}" ClipboardContentBinding="{x:Null}" Header="Thread ID"/>
                         <DataGridTextColumn Binding="{Binding Time}" ClipboardContentBinding="{x:Null}" Header="Time"/>
+                        <DataGridTextColumn Binding="{Binding System_call_name}" ClipboardContentBinding="{x:Null}" Header="System Call Name"/>
                     </DataGrid.Columns>
 
                     <DataGrid.CellStyle>

@@ -32,7 +32,12 @@ namespace PointyStickBlend
             this.Close();
         }
 
-        private void load_tracefile(object sender, RoutedEventArgs e)
+        private void load_library_tracefile(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("load_library_tracefile() not yet implemented.");
+        }
+
+        private void load_instruction_tracefile(object sender, RoutedEventArgs e)
         {
             // Load the global color palette
             Array color_palette = (Array)this.FindResource("color_palette");

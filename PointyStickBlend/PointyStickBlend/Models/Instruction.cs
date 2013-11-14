@@ -65,5 +65,13 @@ namespace PointyStickBlend.Models
             get { return desired_color; }
             set { desired_color = value; }
         }
+
+        string system_call_name;
+
+        public string System_call_name
+        {
+            get { return system_call_name; }
+            set { system_call_name = value; }
+        }
     }
 }

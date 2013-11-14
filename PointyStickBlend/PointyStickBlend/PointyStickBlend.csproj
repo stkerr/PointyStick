@@ -57,6 +57,8 @@
     </ApplicationDefinition>
     <Compile Include="Models\Instruction.cs" />
     <Compile Include="Models\InstructionModel.cs" />
+    <Compile Include="Models\Library.cs" />
+    <Compile Include="Models\LibraryModel.cs" />
     <Compile Include="ViewModels\InstructionViewModel.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
