@@ -87,7 +87,6 @@ SRCS := $(wildcard src/*.cpp)
 OBJS = $(patsubst src/%.cpp,$(OBJDIR)%$(OBJ_SUFFIX),$(SRCS))
 
 $(OBJDIR)%$(OBJ_SUFFIX): src/%.cpp
-	echo $(OS)
 	$(CXX) $(TOOL_CXXFLAGS) $(COMP_OBJ)$@ $<
 
 $(OBJDIR)PointyStickPinTool$(PINTOOL_SUFFIX): $(OBJS)

@@ -7,3 +7,7 @@
 *~
 *.http
 *original
+obj-intel64/*
+obj-ia32/*
+*.dylib
+*.log
