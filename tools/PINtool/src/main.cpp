@@ -41,6 +41,9 @@ int main(int argc, char** argv)
         event_monitoring_set(true);
     }
     
+    // Set up the events
+    initialize_events();
+    
     // Start up the program to investigate.
     PIN_StartProgram();
 
