@@ -5,6 +5,9 @@
 KNOB<BOOL> KnobDisableLibraryTracing(KNOB_MODE_OVERWRITE, "pintool", "disable_library_trace", "false", "Disable logging of library loads.");
 KNOB<BOOL> KnobDisableInstructionTracing(KNOB_MODE_OVERWRITE, "pintool", "disable_instruction_trace", "false", "Disable logging of instructions.");
 KNOB<BOOL> KnobEnableInitialMonitoring(KNOB_MODE_OVERWRITE, "pintool", "enable_trace_on_start", "false", "Enable instruction logging from program beginning.");
+KNOB<BOOL> KnobEnableMonitoring(KNOB_MODE_OVERWRITE, "pintool", "enable_region_monitoring", "false", "Enable a memory region to monitor for memory writes.\n");
+KNOB<int> KnobRegionStart(KNOB_MODE_OVERWRITE, "pintool", "region_start", "0", "Start of the region to monitor for memory writes.");
+KNOB<int> KnobRegionEnd(KNOB_MODE_OVERWRITE, "pintool", "region_end", "0", "End of the region to monitor for memory writes.");
 
 int Usage()
 {
@@ -39,6 +42,14 @@ int main(int argc, char** argv)
     {
         printf("Enabling tracing on initialization.\n");
         event_monitoring_set(true);
+    }
+    
+    if(KnobEnableMonitoring.Value())
+    {
+        int start = KnobRegionStart.Value();
+        int end = KnobRegionEnd.Value();
+        
+        printf("0x%x 0x%x\n", start, end);
     }
     
     // Set up the events
