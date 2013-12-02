@@ -25,7 +25,6 @@ void instruction_trace(INS ins, void* arg)
     message << "\n";
     LOG(message.str().c_str());
 
-
     // update our current state
     instruction_count++;
     
@@ -38,5 +37,13 @@ void instruction_trace(INS ins, void* arg)
     {
         depth--;
     }
+    
+    // check if a snapshot was requested
+    if(event_snapshot_enabled())
+    {
+        
+    }
+    
+    // if we're writing memory, check for a region monitoring event
 
 }

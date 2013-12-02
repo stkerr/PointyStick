@@ -5,5 +5,7 @@
 #include "instruction_trace.h"
 #include "address_helpers.h"
 #include "events.h"
+#include "snapshotting.h"
+#include "region.h"
 
 #endif

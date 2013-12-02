@@ -1,0 +1,21 @@
+#include "snapshotting.h"
+#include "PointyStick.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+bool take_snapshot(region_t *region)
+{
+    time_t current_time = time(0);
+//    itoa(current_time, time_str, 10);
+    
+    char filename[260];
+    snprintf(filename, 260, "snapshot.%d.hex", (int)current_time);
+
+    printf("%s\n", filename);
+    //FILE *fp = fopen();
+    
+//    fclose(fp);
+    return true;
+}

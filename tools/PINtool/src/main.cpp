@@ -24,6 +24,9 @@ int main(int argc, char** argv)
         return Usage();
     }
     
+    region_t r;
+    take_snapshot(&r);
+    
     if(!KnobDisableLibraryTracing.Value())
     {
         printf("Enabling library tracing.\n");
