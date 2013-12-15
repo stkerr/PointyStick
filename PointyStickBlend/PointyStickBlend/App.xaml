@@ -3,11 +3,13 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="PointyStickBlend.App"
     StartupUri="MainWindow.xaml"
-    xmlns:InstructionViewModel="clr-namespace:PointyStickBlend"
+    xmlns:InstructionViewModel="clr-namespace:PointyStickBlend.ViewModels"
+    xmlns:LibraryViewModel="clr-namespace:PointyStickBlend.ViewModels"
     >
     <Application.Resources>
         <ResourceDictionary>
             <InstructionViewModel:InstructionViewModel x:Name="instruction_view_model" x:Key="instruction_view_model" />
+            <LibraryViewModel:LibraryViewModel x:Name="library_view_model" x:Key="library_view_model" />
             <x:Array Type="SolidColorBrush" x:Name="color_palette" x:Key="color_palette">
                 <SolidColorBrush Color="#f0e8cd" />
                 <SolidColorBrush Color="#dbd5b9" />

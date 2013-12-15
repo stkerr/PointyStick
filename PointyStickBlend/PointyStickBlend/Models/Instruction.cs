@@ -67,7 +67,6 @@ namespace PointyStickBlend.Models
         }
 
         string system_call_name;
-
         public string System_call_name
         {
             get { return system_call_name; }

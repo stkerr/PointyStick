@@ -1,5 +1,7 @@
-﻿using System;
+﻿using PointyStickBlend.Standalone;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,7 +27,7 @@ namespace PointyStickBlend.Models
         string library_name;
         public string Library_name
         {
-            get { return library_name; }
+            get { return library_name; } 
             set { library_name = value; }
         }
 
@@ -37,7 +39,18 @@ namespace PointyStickBlend.Models
         }
 
         UInt32 size_execution;
+        public UInt32 Size_execution
+        {
+            get { return size_execution; }
+            set { size_execution = value; }
+        }
+
         UInt32 size_disk;
+        public UInt32 Size_disk
+        {
+            get { return size_disk; }
+            set { size_disk = value; }
+        }
 
         public Library()
         {
@@ -45,18 +58,21 @@ namespace PointyStickBlend.Models
         }
     }
 
-    class LibraryFactory
+    public class LibraryFactory
     {
-        public Library GetLibraryFromDisk(string filepath)
+        public static Library GetLibraryFromDisk(string filepath)
         {
             Library l = new Library();
+
+            // PEParser p = new PEParser(filepath);
+
             return l;
         }
 
-        public Library GetLibraryFromLogLine(string library_line)
+        public static Library GetLibraryFromLogLine(string library_line)
         {
-            Library l = new Library();
-            return l;
+            Debug.WriteLine("GetLibraryFromLogLine not implemented.");
+            throw new NotImplementedException();
         }
 
     }

@@ -11,3 +11,12 @@ obj-intel64/*
 obj-ia32/*
 *.dylib
 *.log
+*/Debug/*
+*/Release/*
+*.idb
+*.pdb
+*.sdf
+*.user
+*.filters
+*.log
+*.opensdf

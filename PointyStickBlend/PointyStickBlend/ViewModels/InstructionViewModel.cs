@@ -8,7 +8,7 @@ using System.Collections.ObjectModel;
 using PointyStickBlend.Models;
 using System.Diagnostics;
 
-namespace PointyStickBlend
+namespace PointyStickBlend.ViewModels
 {
     public class InstructionViewModel : INotifyPropertyChanged
     {
