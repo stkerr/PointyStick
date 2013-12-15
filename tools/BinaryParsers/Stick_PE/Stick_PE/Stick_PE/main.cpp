@@ -38,13 +38,19 @@ int main(int argc, char* argv[])
         std::string library_name(first_token.substr(first_token.find(":")+1));
         
         // trim the string
-        
         trim(library_name);
 
         if (library_name.length() == 0)
             continue;
 
+        // print out this libraries header
+        std::cout << library_name << std::endl;
+
+        // print out this libraries information
         get_exports(library_name);
+
+        // print out this libraries footer
+        std::cout << std::endl;
     }
 
 

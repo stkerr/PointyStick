@@ -30,6 +30,7 @@ void get_exports(std::string filename)
 
     IMAGE_FILE_HEADER *file_header = &pe_header->FileHeader;
     IMAGE_OPTIONAL_HEADER* optional_header = &pe_header->OptionalHeader;
+    printf("Base|%x\n", optional_header->ImageBase);
 
     if (!optional_header->NumberOfRvaAndSizes)
     {
@@ -67,20 +68,16 @@ void get_exports(std::string filename)
         return;
     }
 
-    
     int* functions = (int*)(buffer + exports_section_header->PointerToRawData - exports_section_header->VirtualAddress + exports->AddressOfFunctions);
     short* ordinals = (short*)(buffer + exports_section_header->PointerToRawData - exports_section_header->VirtualAddress + exports->AddressOfNameOrdinals);
     int * names = (int*)(buffer + exports_section_header->PointerToRawData - exports_section_header->VirtualAddress + exports->AddressOfNames);
 
     for (int i = 0; i < exports->NumberOfNames; i++)
     {
-        printf("%s ", buffer + exports_section_header->PointerToRawData - exports_section_header->VirtualAddress + names[i]);
+        printf("Export|%s:", buffer + exports_section_header->PointerToRawData - exports_section_header->VirtualAddress + names[i]);
         short ordinal_number = ordinals[i];
-        printf(" 0x%08X\n", functions[ordinal_number]);
+        printf("%08X\n", functions[ordinal_number]);
     }
-    
-    std::cout << filename << " done" << std::endl;
-    printf("0x%x\n", optional_header->ImageBase);
 
     free(buffer);
 }
