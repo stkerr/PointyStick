@@ -1,0 +1,103 @@
+﻿<Window x:Class="PointyStickBlend.RunWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="RunWindow" Height="768.274" Width="624.627">
+    <Grid>
+        <TabControl HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <TabItem Header="Configuration">
+                <Grid Background="#FFE5E5E5">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+                    
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <!-- Static Controls  -->
+
+                    <!-- Application to test -->
+                    <Label Content="Application to Examine" Margin="0,10" Grid.Row="0" Grid.Column="0" />
+                    <Button Content="Open File"  Margin="0,10" Grid.Row="0" Grid.Column="1"/>
+                    <TextBox TextWrapping="Wrap" Margin="10" Grid.Row="0" Grid.Column="2"/>
+                    
+                    
+                    <!-- Region Monitoring -->
+                    <Label Content="Enable Region Monitoring" Grid.Row="1" Grid.Column="0" />
+                    <CheckBox Grid.Row="1" Grid.Column="1" Margin="0,10" />
+                    
+                    <Label Content="Region Start" Grid.Row="2" Grid.Column="0" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Margin="0,10" />
+
+                    <Label Content="Region End" Grid.Row="3" Grid.Column="0" />
+                    <TextBox Grid.Row="3" Grid.Column="1" Margin="0,10" />
+                    
+                    <!-- Instruction Tracing -->
+                    <Label Content="Enable Tracing" Grid.Row="4" Grid.Column="0" />
+                    <CheckBox Grid.Row="4" Grid.Column="1" Margin="0,10" />
+
+                    <Label Content="Trace from Start" Grid.Row="5" Grid.Column="0" />
+                    <CheckBox Grid.Row="5" Grid.Column="1" Margin="0,10" />
+                    
+                    <!-- Placeholder -->
+                    <Label Grid.Row="6" Grid.Column="0" />
+                    
+                    <!-- Start Collecting -->
+                    <Button Content="Start Collection" Grid.Row="7" Grid.Column="1" Margin="0,10" />
+                    
+                </Grid>
+            </TabItem>
+            <TabItem Header="Runtime Control">
+                <Grid Background="#FFE5E5E5">
+                    
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="Auto" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    
+                    <!-- Dyanmic Controls -->
+
+                    <!-- Snapshot -->
+                    <Label Content="Snapshot Controls" Margin="0,10" Grid.Row="0" Grid.Column="0"/>
+                    <Button Content="Take Snapshot"    Margin="0,10" Grid.Row="0" Grid.Column="1" />
+                    
+                    <!-- Enable Tracing -->
+                    <Label Content="Tracing Controls" Margin="0,10" Grid.Row="1" Grid.Column="0"/>
+                    <Button Content="Enable Tracing"  Margin="0,10" Grid.Row="1" Grid.Column="1" />
+                    
+                    <!-- Disable Tracing -->
+                    <Button Content="Disable Tracing" Margin="0,10" Grid.Row="2" Grid.Column="1" />
+                    
+                    <!-- Placeholder to get the grid to expand properly -->
+                    <Label Grid.Row="3" />
+                    
+                    <!-- Terminate Application -->
+                    <Button Content="Terminate Application" Margin="0,10" Grid.Row="4" Grid.Column="2" />
+                    
+                </Grid>
+            </TabItem>
+            <TabItem Header="Help">
+                <Grid Background="#FFE5E5E5">
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

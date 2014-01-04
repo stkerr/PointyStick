@@ -19,8 +19,12 @@ bool take_snapshot(region_t *region)
     snprintf(filename, 260, "snapshot.%d.hex", (int)current_time);
 
     printf("%s\n", filename);
-    //FILE *fp = fopen();
+    FILE *fp = fopen(filename, "wb");
     
-//    fclose(fp);
+    for (char* i = (char*)region->start; i != region->end; i++)
+        fwrite(region->start, 1, 1, fp);
+
+    fclose(fp);
+
     return true;
 }

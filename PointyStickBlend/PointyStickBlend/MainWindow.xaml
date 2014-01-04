@@ -12,6 +12,9 @@
                 <MenuItem Header="_File">
                     <MenuItem Header="Exit" Click="exit_application" />
                 </MenuItem>
+                <MenuItem Header="_Collection">
+                    <MenuItem Header="_Start Collection" Click="start_collection" />
+                </MenuItem>
                 <MenuItem Header="_Data">
                     <MenuItem Header="Load Instruction File" Click="load_instruction_tracefile" />
                     <MenuItem Header="Load Library File" Click="load_library_tracefile" />

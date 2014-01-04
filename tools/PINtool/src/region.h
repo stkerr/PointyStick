@@ -5,10 +5,10 @@
 
 typedef struct _region_t
 {
-    int start;
-    int end;
+    void* start;
+    void* end;
 } region_t;
 
-bool region_contains(region_t *region, int address);
+bool region_contains(region_t *region, void* address);
 
 #endif
