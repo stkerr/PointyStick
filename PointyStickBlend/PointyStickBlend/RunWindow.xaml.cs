@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +23,50 @@ namespace PointyStickBlend
         public RunWindow()
         {
             InitializeComponent();
+        }
+
+        private void open_application(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog dialog = new OpenFileDialog();
+
+            if(dialog.ShowDialog() == true)
+            {
+                textbox_filename.Text = dialog.FileName;
+            }
+        }
+
+        private void start_collection(object sender, RoutedEventArgs e)
+        {
+            string command_string = "-t PointyStick ";
+
+            /*
+             * Tracing Settings
+             */
+            if(tracing_checkbox.IsChecked == false)
+            {
+                command_string += "-notrace ";
+            }
+            else
+            {
+                if(tracing_fromstart.IsChecked == true)
+                {
+                    enable_tracing();
+                }
+            }
+
+            /*
+             * Region Monitoring Settings
+             */
+
+            /*
+             * Start the PIN tool
+             */
+            System.Diagnostics.Process.Start("pin", command_string);
+        }
+
+        bool enable_tracing()
+        {
+            return true;
         }
     }
 }
