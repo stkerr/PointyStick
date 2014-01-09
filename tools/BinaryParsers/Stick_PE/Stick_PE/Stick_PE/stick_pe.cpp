@@ -12,6 +12,8 @@ void get_exports(std::string filename)
 {
     
     FILE* fp = fopen(filename.c_str(), "rb");
+    if (fp == 0)
+        return;
 
     fseek(fp, 0, SEEK_END);
     long size = ftell(fp);
@@ -48,15 +50,18 @@ void get_exports(std::string filename)
     IMAGE_SECTION_HEADER* exports_section_header = (IMAGE_SECTION_HEADER*)((char*)optional_header + file_header->SizeOfOptionalHeader);
     for (int i = 0; i < file_header->NumberOfSections; i++)
     {
-        if ((exports_section_header + i)->VirtualAddress < export_directory.VirtualAddress &&
-            export_directory.VirtualAddress < (exports_section_header + i)->VirtualAddress + (exports_section_header + i)->Misc.VirtualSize)
+        IMAGE_SECTION_HEADER* temp = exports_section_header + i;
+        if (temp->VirtualAddress <= export_directory.VirtualAddress &&
+            export_directory.VirtualAddress < temp->VirtualAddress + temp->Misc.VirtualSize)
         {
-            exports_section_header = exports_section_header + i;
+            exports_section_header = temp;
+            break;
         }
     }
 
+    //IMAGE_EXPORT_DIRECTORY* exports = (IMAGE_EXPORT_DIRECTORY*)(buffer + export_directory.VirtualAddress + exports_section_header->PointerToRawData - exports_section_header->VirtualAddress);
     IMAGE_EXPORT_DIRECTORY* exports = (IMAGE_EXPORT_DIRECTORY*)(buffer + export_directory.VirtualAddress + exports_section_header->PointerToRawData - exports_section_header->VirtualAddress);
-    
+
     if (exports->NumberOfFunctions == 0)
     {
         return;

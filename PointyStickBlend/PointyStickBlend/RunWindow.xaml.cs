@@ -37,7 +37,7 @@ namespace PointyStickBlend
 
         private void start_collection(object sender, RoutedEventArgs e)
         {
-            string command_string = "-t PointyStick ";
+            string command_string = "-t PointyStickPinTool ";
 
             /*
              * Tracing Settings
@@ -57,6 +57,11 @@ namespace PointyStickBlend
             /*
              * Region Monitoring Settings
              */
+
+            /*
+             * Append the application name
+             */
+            command_string += " -- " + textbox_filename.Text;
 
             /*
              * Start the PIN tool

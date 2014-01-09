@@ -5,7 +5,9 @@
     x:Name="Window"
     xmlns:local="clr-namespace:PointyStickBlend" 
     Title="MainWindow"
-    Width="640" Height="480">
+    Width="640" Height="480"
+    Icon="pointystick.jpg"
+    >
     <Grid x:Name="LayoutRoot" Background="White">
         <DockPanel LastChildFill="True">
             <Menu DockPanel.Dock="Top">

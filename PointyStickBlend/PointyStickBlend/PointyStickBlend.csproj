@@ -39,6 +39,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -65,7 +66,6 @@
     <Compile Include="RunWindow.xaml.cs">
       <DependentUpon>RunWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Standalone\PEParser.cs" />
     <Compile Include="ViewModels\InstructionViewModel.cs" />
     <Compile Include="ViewModels\LibraryViewModel.cs" />
     <Page Include="MainWindow.xaml">
@@ -96,9 +96,19 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SampleData\" />
+    <Folder Include="Standalone\" />
     <Folder Include="Views\" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\PointyStickIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="pointystick.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath32)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>copy ..\..\..\..\tools\PINtool\obj-ia32\PointyStickPinTool.dll</PreBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.
 	<Target Name="BeforeBuild">
