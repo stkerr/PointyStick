@@ -61,6 +61,8 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
@@ -77,20 +79,28 @@
 
                     <!-- Snapshot -->
                     <Label Content="Snapshot Controls" Margin="0,10" Grid.Row="0" Grid.Column="0"/>
-                    <Button Content="Take Snapshot"    Margin="0,10" Grid.Row="0" Grid.Column="1" />
+                    <Button x:Name="snapshot_button" Content="Take Snapshot"    Margin="0,10" Grid.Row="0" Grid.Column="1" />
                     
                     <!-- Enable Tracing -->
                     <Label Content="Tracing Controls" Margin="0,10" Grid.Row="1" Grid.Column="0"/>
-                    <Button Content="Enable Tracing"  Margin="0,10" Grid.Row="1" Grid.Column="1" />
+                    <Button x:Name="enable_tracing_button" Content="Enable Tracing"  Margin="0,10" Grid.Row="1" Grid.Column="1" Click="enable_tracing_button_Click" />
                     
                     <!-- Disable Tracing -->
-                    <Button Content="Disable Tracing" Margin="0,10" Grid.Row="2" Grid.Column="1" />
+                    <Button x:Name="disable_tracing_button" Content="Disable Tracing" Margin="0,10" Grid.Row="2" Grid.Column="1" Click="disable_tracing_button_Click" />
+                    
+                    <!-- Tracing Status -->
+                    <Label Content="Tracing Status" Grid.Row="3" Grid.Column="0" />
+                    <Label x:Name="tracing_status_label" Grid.Row="3" Grid.Column="1" />
+
+                    <!-- Snapshot Status -->
+                    <Label Content="Snapshot Status" Grid.Row="4" Grid.Column="0" />
+                    <Label x:Name="snapshot_status_label" Grid.Row="4" Grid.Column="1" /> 
                     
                     <!-- Placeholder to get the grid to expand properly -->
-                    <Label Grid.Row="3" />
+                    <Label Grid.Row="5" />
                     
                     <!-- Terminate Application -->
-                    <Button Content="Terminate Application" Margin="0,10" Grid.Row="4" Grid.Column="2" />
+                    <Button Content="Terminate Application" Margin="0,10" Grid.Row="6" Grid.Column="2" />
                     
                 </Grid>
             </TabItem>
