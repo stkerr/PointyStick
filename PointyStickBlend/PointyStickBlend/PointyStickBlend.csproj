@@ -103,10 +103,10 @@
     <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\PointyStickIcon.ico" />
+    <Resource Include="pointystick.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="pointystick.jpg" />
+    <Resource Include="Resources\pointystick.jpg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath32)\Microsoft.CSharp.targets" />
   <PropertyGroup>

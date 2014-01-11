@@ -22,6 +22,9 @@ namespace PointyStickBlend
     /// </summary>
     public partial class MainWindow : Window
     {
+        string logfile_name = "pintool.log";
+        string supportfile_name = "support.log";
+
         public MainWindow()
         {
             this.InitializeComponent();
@@ -41,10 +44,9 @@ namespace PointyStickBlend
             // Create a new library object for this line
             Library current_library = null;
 
-            string filename = "PointyStickLibrarySupportTrace.txt";
             try
             {
-                using (FileStream fs = new FileStream(filename, FileMode.Open))
+                using (FileStream fs = new FileStream(supportfile_name, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(fs))
                     {
@@ -118,11 +120,6 @@ namespace PointyStickBlend
                                     Debug.WriteLine("Key " + key + " not handled.");
                                     break;
                             }
-
-
-                            // Add the library to the model
-                            //global_library_list.Model.Add(l);
-
                         }
                     }
                 }
@@ -136,11 +133,13 @@ namespace PointyStickBlend
         private void load_library_tracefile(object sender, RoutedEventArgs e)
         {
             LibraryViewModel global_library_list = (LibraryViewModel)this.FindResource("library_view_model");
+            
+            // Clear the model
+            global_library_list.Model.Clear();
 
-            string filename = "PointyStickLibraryTrace.txt";
             try
             {
-                using (FileStream fs = new FileStream(filename, FileMode.Open))
+                using (FileStream fs = new FileStream(logfile_name, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(fs))
                     {
@@ -151,6 +150,10 @@ namespace PointyStickBlend
 
                             string line = sr.ReadLine().Trim();
 
+                            // make sure this is a library line
+                            if(line.Contains("[LIB]") == false)
+                                continue;
+                             
                             string[] kvpairs = line.Split('|');
 
                             uint start_address = 0;
@@ -164,9 +167,14 @@ namespace PointyStickBlend
                                 // Split on the first colon
                                 string[] members = kv.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                                if (members.Length != 2)
+                                if(members.Length == 1 && kv.Contains("[LIB]"))
                                 {
-                                    Debug.WriteLine("Key-Value pair causing problems: " + members);
+                                    // drop the header
+                                    continue;
+                                }
+                                else if (members.Length != 2)
+                                {
+                                    Debug.WriteLine("Key-Value pair causing problems: " + kv);
                                     continue;
                                 }
                                 string key = members[0].Trim();
@@ -176,29 +184,38 @@ namespace PointyStickBlend
 
                                 switch (key)
                                 {
-                                    case "Library Name": // Library name
+                                    case "Name": // Library name
                                         l.Library_name = value;
                                         break;
-                                    case "Start Address": // Address loaded to, may be different than on disk, due to ASLR
+                                    case "Strt": // Address loaded to, may be different than on disk, due to ASLR
                                         uint start_address_parsed;
-                                        if (UInt32.TryParse(value, out start_address_parsed))
+                                        if (UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out start_address_parsed))
+                                        {
                                             l.Address_execution = start_address_parsed;
+                                            start_address = start_address_parsed;
+                                        }
                                         else
                                             Debug.WriteLine("Couldn't parse start address " + value);
                                         break;
-                                    case "End Address": // Address loaded to, may be different than on disk, due to ASLR
+                                    case "High": // Address loaded to, may be different than on disk, due to ASLR
                                         uint end_address_parsed;
-                                        if (UInt32.TryParse(value, out end_address_parsed))
+                                        if (UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out end_address_parsed))
                                             end_address = end_address_parsed;
                                         else
                                             Debug.WriteLine("Couldn't parse end address " + value);
                                         break;
-                                    case "Entry Address": // Address loaded to, may be different than on disk, due to ASLR
+                                    case "Enty": // Address loaded to, may be different than on disk, due to ASLR
                                         uint entry_address_parsed;
-                                        if (UInt32.TryParse(value, out entry_address_parsed))
+                                        if (UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out entry_address_parsed))
                                             entry_address = entry_address_parsed;
                                         else
                                             Debug.WriteLine("Couldn't parse entry address " + value);
+                                        break;
+                                    case "Low":
+                                        break;
+                                    case "Mapd":
+                                        break;
+                                    case "Type":
                                         break;
                                     default:
                                         Debug.WriteLine("Key " + key + " not handled.");
@@ -206,7 +223,11 @@ namespace PointyStickBlend
                                 }
                             }
 
-                            l.Size_execution = end_address - start_address;
+                            if (end_address == 0 || start_address == 0)
+                                Debug.WriteLine("Start or end address is empty.");
+                            else
+                                l.Size_execution = end_address - start_address;
+
 
                             // Add the library to the model
                             global_library_list.Model.Add(l);
@@ -235,11 +256,9 @@ namespace PointyStickBlend
             // Clear the model
             global_instruction_list.Model.Clear();
 
-            string filename = "PointyStickInstructionTrace.txt";
-
             try
             {
-                using (FileStream fs = new FileStream(filename, FileMode.Open))
+                using (FileStream fs = new FileStream(logfile_name, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(fs))
                     {
@@ -249,6 +268,10 @@ namespace PointyStickBlend
                             Instruction i = new Instruction();
 
                             string line = sr.ReadLine().Trim();
+
+                            // make sure this is an instruction line
+                            if (line.Contains("[INS]") == false)
+                                continue;
 
                             string[] kvpairs = line.Split('|');
 
@@ -260,9 +283,14 @@ namespace PointyStickBlend
                                 // Split on the first colon
                                 string[] members = kv.Split(new char[] { ':' }, 2, StringSplitOptions.RemoveEmptyEntries);
 
-                                if (members.Length != 2)
+                                if (members.Length == 1 && kv.Contains("[INS]"))
                                 {
-                                    Debug.WriteLine("Key-Value pair causing problems: " + members);
+                                    // drop the header
+                                    continue;
+                                }
+                                else if (members.Length != 2)
+                                {
+                                    Debug.WriteLine("Key-Value pair causing problems: " + kv);
                                     continue;
                                 }
                                 string key = members[0].Trim();
@@ -272,7 +300,7 @@ namespace PointyStickBlend
                                 {
                                     case "adr": // Address (Execution)
                                         uint address;
-                                        if (UInt32.TryParse(value, out address))
+                                        if (UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out address))
                                             i.Address_execution = address;
                                         else
                                             Debug.WriteLine("Couldn't parse address " + value);
@@ -292,11 +320,15 @@ namespace PointyStickBlend
                                             Debug.WriteLine("Couldn't parse time " + value);
                                         break;
                                     case "dth": // Depth
-                                        uint depth;
-                                        if (UInt32.TryParse(value, out depth))
+                                        int depth;
+                                        if (Int32.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out depth))
                                         {
                                             i.Depth = depth;
-                                            i.Desired_color = ((SolidColorBrush)(color_palette.GetValue(depth % color_palette.GetLength(0))));
+
+                                            // this is needed in case depth is negative
+                                            int index = (depth % color_palette.GetLength(0) + color_palette.GetLength(0)) % color_palette.GetLength(0);
+
+                                            i.Desired_color = ((SolidColorBrush)(color_palette.GetValue(index)));
                                         }
                                         else
                                             Debug.WriteLine("Couldn't parse depth " + value);
@@ -324,6 +356,36 @@ namespace PointyStickBlend
             {
                 Debug.WriteLine("Could not open instruction tracefile.");
             }
+        }
+
+        private void combine_instruction_and_library_data(object sender, RoutedEventArgs e)
+        {
+            // Load the global models
+            InstructionViewModel global_instruction_list = (InstructionViewModel)this.FindResource("instruction_view_model");
+            LibraryViewModel global_library_list = (LibraryViewModel)this.FindResource("library_view_model");
+
+
+            /*
+             * Iterate through each instruction and set the library name for it.
+             * 
+             * This will probably be slow...
+             */
+            foreach (Instruction i in global_instruction_list.Model)
+            {
+                foreach (Library l in global_library_list.Model)
+                {
+                    if(l.Address_execution <= i.Address_execution && i.Address_execution < (l.Address_execution + l.Size_execution))
+                    {
+                        i.Library_name = l.Library_name;
+                        break;
+                    }
+                }
+            }
+
+            /*
+             * Reload the GUI window to reflect the changes we just made.
+             * This 
+             */
         }
 
         private void start_collection(object sender, RoutedEventArgs e)

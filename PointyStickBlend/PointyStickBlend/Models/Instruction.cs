@@ -24,8 +24,8 @@ namespace PointyStickBlend.Models
             set { address_disk = value; }
         }
 
-        UInt32 depth;
-        public UInt32 Depth
+        Int32 depth;
+        public Int32 Depth
         {
             get { return depth; }
             set { depth = value; }
