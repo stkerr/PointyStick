@@ -18,9 +18,10 @@
                     <MenuItem Header="_Start Collection" Click="start_collection" />
                 </MenuItem>
                 <MenuItem Header="_Data">
-                    <MenuItem Header="Load Instruction File" Click="load_instruction_tracefile" />
+                    <!--MenuItem Header="Load Instruction File" Click="load_instruction_tracefile" />
                     <MenuItem Header="Load Library File" Click="load_library_tracefile" />
-                    <MenuItem Header="Integrate" Click="combine_instruction_and_library_data" />
+                    <MenuItem Header="Integrate" Click="combine_instruction_and_library_data" /-->
+                    <MenuItem Header="Process PIN log" Click="process_pin_log" />
                 </MenuItem>
             </Menu>
             <Grid DataContext="{StaticResource instruction_view_model}">

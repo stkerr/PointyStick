@@ -130,7 +130,7 @@ namespace PointyStickBlend
             }
         }
 
-        private void load_library_tracefile(object sender, RoutedEventArgs e)
+        private void load_library_tracefile()
         {
             LibraryViewModel global_library_list = (LibraryViewModel)this.FindResource("library_view_model");
             
@@ -234,8 +234,6 @@ namespace PointyStickBlend
                         }
                     }
                 }
-
-                load_library_support_tracefile(sender, e);
             }
             catch(FileNotFoundException ex)
             {
@@ -245,7 +243,7 @@ namespace PointyStickBlend
 
         }
 
-        private void load_instruction_tracefile(object sender, RoutedEventArgs e)
+        private void load_instruction_tracefile()
         {
             // Load the global color palette
             Array color_palette = (Array)this.FindResource("color_palette");
@@ -358,7 +356,7 @@ namespace PointyStickBlend
             }
         }
 
-        private void combine_instruction_and_library_data(object sender, RoutedEventArgs e)
+        private void combine_instruction_and_library_data()
         {
             // Load the global models
             InstructionViewModel global_instruction_list = (InstructionViewModel)this.FindResource("instruction_view_model");
@@ -386,6 +384,13 @@ namespace PointyStickBlend
              * Reload the GUI window to reflect the changes we just made.
              * This 
              */
+        }
+
+        private void process_pin_log(object sender, RoutedEventArgs e)
+        {
+            load_instruction_tracefile();
+            load_library_tracefile();
+            combine_instruction_and_library_data();
         }
 
         private void start_collection(object sender, RoutedEventArgs e)

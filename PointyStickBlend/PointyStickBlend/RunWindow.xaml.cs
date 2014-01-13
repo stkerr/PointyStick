@@ -134,7 +134,23 @@ namespace PointyStickBlend
             /*
              * Start the PIN tool
              */
-            System.Diagnostics.Process.Start("pin", command_string);
+            try
+            {
+                string pin_root = System.Environment.GetEnvironmentVariable("PIN_ROOT");
+
+                if (pin_root.CompareTo("") == 0)
+                {
+                    MessageBox.Show("Please define the environment variable PIN_ROOT and restart the application.");
+                }
+                else
+                {
+                    System.Diagnostics.Process.Start(pin_root + "\\pin.exe", command_string);
+                }
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
         }
 
         private bool enable_tracing()
