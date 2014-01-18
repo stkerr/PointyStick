@@ -37,7 +37,7 @@ namespace PointyStickBlend
             this.Close();
         }
 
-        private void load_library_support_tracefile(object sender, RoutedEventArgs e)
+        private void load_library_support_tracefile()
         {
             LibraryViewModel global_library_list = (LibraryViewModel)this.FindResource("library_view_model");
 
@@ -379,17 +379,13 @@ namespace PointyStickBlend
                     }
                 }
             }
-
-            /*
-             * Reload the GUI window to reflect the changes we just made.
-             * This 
-             */
         }
 
         private void process_pin_log(object sender, RoutedEventArgs e)
         {
             load_instruction_tracefile();
             load_library_tracefile();
+            load_library_support_tracefile();
             combine_instruction_and_library_data();
         }
 

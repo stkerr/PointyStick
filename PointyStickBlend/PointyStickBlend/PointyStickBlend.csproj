@@ -114,7 +114,8 @@
     </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>copy ..\..\..\..\tools\PINtool\obj-ia32\PointyStickPinTool.dll .</PostBuildEvent>
+    <PostBuildEvent>copy ..\..\..\..\tools\PINtool\obj-ia32\PointyStickPinTool.dll .
+copy ..\..\..\..\tools\BinaryParsers\Stick_PE\Stick_PE\$(ConfigurationName)\Stick_PE.exe .</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
 	     Other similar extension points exist, see Microsoft.Common.targets.

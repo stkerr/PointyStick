@@ -25,10 +25,6 @@ namespace PointyStickBlend.ViewModels
         {
             Debug.WriteLine("Constructing InstructionViewModel.");
             IList<Instruction> list = new List<Instruction>();
-            list.Add(new Instruction());
-            list.Add(new Instruction());
-            list.Add(new Instruction());
-            list.Add(new Instruction());
             model = new InstructionModel(list);
             
         }

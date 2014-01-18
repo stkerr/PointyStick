@@ -30,19 +30,30 @@ int main(int argc, char* argv[])
         // get the next line of the file
         std::getline(input, line);
 
-        // split on the token '|'
-        int first_pipe_index = line.find('|'); // first index is the type block
-        int second_pipe_index = line.find('|', first_pipe_index+1); // second index is the library name
-        if (second_pipe_index < 0) // no second index, so skip this line
+        std::istringstream line_stream(line);
+        std::string token;
+
+        std::string mode;
+        std::string library_name;
+
+        if (std::getline(line_stream, token, '|'))
+        {
+            mode = token;
+            trim(mode);
+        }
+
+        // check this is a library format line
+        if (mode.compare("[LIB]") != 0)
             continue;
 
-        std::string first_token(line.substr(0, first_pipe_index));
-        std::string second_token(line.substr(first_pipe_index+1, second_pipe_index-first_pipe_index-1));
+        if (std::getline(line_stream, token, '|'))
+        {
+            library_name = token;
 
-        std::string library_name(second_token.substr(second_token.find(":")+1));
-        
-        // trim the string
-        trim(library_name);
+            library_name = library_name.substr(library_name.find(':')+1, std::string::npos);
+
+            trim(library_name);
+        }
 
         if (library_name.length() == 0)
             continue;

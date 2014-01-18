@@ -81,7 +81,7 @@ void get_exports(std::string filename)
     {
         printf("Export|%s:", buffer + exports_section_header->PointerToRawData - exports_section_header->VirtualAddress + names[i]);
         short ordinal_number = ordinals[i];
-        printf("%08X\n", functions[ordinal_number]);
+        //printf("%08X\n", functions[ordinal_number]);
     }
 
     free(buffer);
