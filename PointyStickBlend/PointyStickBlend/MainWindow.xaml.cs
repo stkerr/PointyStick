@@ -217,6 +217,9 @@ namespace PointyStickBlend
                                         break;
                                     case "Type":
                                         break;
+                                    case "Msg":
+                                        // defaut informational, non-relevant data portion
+                                        continue;
                                     default:
                                         Debug.WriteLine("Key " + key + " not handled.");
                                         break;
@@ -224,7 +227,10 @@ namespace PointyStickBlend
                             }
 
                             if (end_address == 0 || start_address == 0)
-                                Debug.WriteLine("Start or end address is empty.");
+                            {
+                                // Debug.WriteLine("Start or end address is empty.");
+                                continue;
+                            }
                             else
                                 l.Size_execution = end_address - start_address;
 
@@ -375,6 +381,15 @@ namespace PointyStickBlend
                     if(l.Address_execution <= i.Address_execution && i.Address_execution < (l.Address_execution + l.Size_execution))
                     {
                         i.Library_name = l.Library_name;
+
+                        foreach(KeyValuePair<string, uint> export in l.Exports)
+                        {
+                            if(i.Address_execution - l.Address_execution == export.Value)
+                            {
+                                i.System_call_name = export.Key;
+                            }
+                        }
+
                         break;
                     }
                 }

@@ -25,7 +25,7 @@ void library_unloaded_function(IMG image, void* arg)
 {
     std::ostringstream logged;
     logged << "[LIB] | ";
-    logged << "Unloading " << IMG_Name(image) << " |";
+    logged << "Msg : Unloading " << IMG_Name(image) << " |";
     logged << "\n";
 
     LOG(logged.str().c_str());
