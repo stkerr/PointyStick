@@ -23,9 +23,12 @@
                     <MenuItem Header="Integrate" Click="combine_instruction_and_library_data" /-->
                     <MenuItem Header="Process PIN log" Click="process_pin_log" />
                 </MenuItem>
+                <MenuItem Header="_Filtering">
+                    <MenuItem Header="Apply Filter" Click="apply_filters" />
+                </MenuItem>
             </Menu>
             <Grid DataContext="{StaticResource instruction_view_model}">
-                <DataGrid Margin="1,0,-1,0" ItemsSource="{Binding Model}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+                <DataGrid Name="results_grid" Margin="1,0,-1,0" ItemsSource="{Binding Model}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Instruction_count}" ClipboardContentBinding="{x:Null}" Header="Instruction Count"/>
                         <DataGridTextColumn Binding="{Binding Address_disk, StringFormat={}{0:x8}}" ClipboardContentBinding="{x:Null}" Header="Disk Address "/>

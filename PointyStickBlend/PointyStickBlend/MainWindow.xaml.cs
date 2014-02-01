@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Data;
 
 namespace PointyStickBlend
 {
@@ -414,6 +415,13 @@ namespace PointyStickBlend
              */
             RunWindow run = new RunWindow();
             run.Show();
+        }
+
+        private void apply_filters(object sender, RoutedEventArgs e)
+        {
+            Predicate<object> pi = (object i) => { return ((Instruction)i).Library_name.Contains("exe"); };
+            results_grid.Items.Filter += pi;
+            
         }       
     }
 }
