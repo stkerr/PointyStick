@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -44,6 +45,8 @@ namespace PointyStickBlend
 
         IntPtr event_monitoring = IntPtr.Zero;
         IntPtr event_snapshot = IntPtr.Zero;
+
+        Process instrumented_process = new Process();
 
         public RunWindow()
         {
@@ -144,13 +147,42 @@ namespace PointyStickBlend
                 }
                 else
                 {
-                    System.Diagnostics.Process.Start(pin_root + "\\pin.exe", command_string);
+                    instrumented_process.StartInfo.FileName = pin_root + "\\pin.exe";
+                    instrumented_process.StartInfo.Arguments = command_string;
+                    instrumented_process.EnableRaisingEvents = true;
+                    instrumented_process.Exited += new EventHandler(instrumented_exited);
+                    instrumented_process.Start();
+
+                    if (instrumented_process == null)
+                    {
+                        throw new Exception("Couldn't start pin.exe");
+                    }
+                    
                 }
             }
             catch(Exception ex)
             {
                 MessageBox.Show(ex.ToString());
             }
+        }
+
+        private void instrumented_exited(object o, EventArgs e)
+        {
+            switch (instrumented_process.ExitCode)
+            {
+                case -1:
+                    MessageBox.Show("Couldn't locate target application.");
+                    break;
+                case 0:
+                    break;
+                case 1:
+                    MessageBox.Show("Invalid PIN tool parameters.");
+                    break;
+                default:
+                    MessageBox.Show("Unhandled PIN error code of " + instrumented_process.ExitCode + ".");
+                    break;
+            }
+            
         }
 
         private bool enable_tracing()
