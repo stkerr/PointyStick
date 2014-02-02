@@ -62,6 +62,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="FilterWindow.xaml.cs">
+      <DependentUpon>FilterWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Models\Instruction.cs" />
     <Compile Include="Models\InstructionModel.cs" />
     <Compile Include="Models\Library.cs" />
@@ -71,6 +74,10 @@
     </Compile>
     <Compile Include="ViewModels\InstructionViewModel.cs" />
     <Compile Include="ViewModels\LibraryViewModel.cs" />
+    <Page Include="FilterWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

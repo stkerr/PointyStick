@@ -419,9 +419,27 @@ namespace PointyStickBlend
 
         private void apply_filters(object sender, RoutedEventArgs e)
         {
-            Predicate<object> pi = (object i) => { return ((Instruction)i).Library_name.Contains("exe"); };
+            Predicate<object> pi = (object i) => { return ((Instruction)i).Library_name != null && ((Instruction)i).Library_name.Contains("exe"); };
             results_grid.Items.Filter += pi;
+
+            LibraryViewModel global_library_list = (LibraryViewModel)this.FindResource("library_view_model");
+            InstructionViewModel global_instruction_list = (InstructionViewModel)this.FindResource("instruction_view_model");
+
+            FilterWindow filter = new FilterWindow();
+
+            foreach(Library l in global_library_list.Model)
+            {
+                filter.library_name.Items.Add(l.Library_name);
+            }
+
+            foreach (Instruction i in global_instruction_list.Model)
+            {
+                if(!filter.thread_id.Items.Contains(i.Thread_id))
+                    filter.thread_id.Items.Add(i.Thread_id);
+            }
             
+            filter.Show();
+
         }       
     }
 }
