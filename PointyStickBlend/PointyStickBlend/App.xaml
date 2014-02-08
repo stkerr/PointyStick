@@ -12,6 +12,7 @@
         <ResourceDictionary>
             <InstructionViewModel:InstructionViewModel x:Name="instruction_view_model" x:Key="instruction_view_model" />
             <LibraryViewModel:LibraryViewModel x:Name="library_view_model" x:Key="library_view_model" />
+            <CollectionViewSource Source="{Binding Source={StaticResource instruction_view_model}, Path=Model}"  x:Key="cvs1" />
             <x:Array Type="SolidColorBrush" x:Name="color_palette" x:Key="color_palette">
                 <SolidColorBrush Color="#f0e8cd" />
                 <SolidColorBrush Color="#dbd5b9" />
