@@ -20,3 +20,4 @@
 *.filters
 *.log
 *.opensdf
+*.hex

@@ -1,19 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
-namespace PointyStickBlend.Models
+namespace PointyStickBlend.Standalone
 {
-    public class InstructionModel : ObservableCollection<Instruction>, INotifyPropertyChanged
+    class InstructionCollectionViewSource : CollectionViewSource, INotifyPropertyChanged
     {
-        public InstructionModel() : base(new List<Instruction>()) { }
-        public InstructionModel(List<Instruction> list) : base(list) { }
-        public InstructionModel(IEnumerable<Instruction> collection) : base(collection) { }
+        public InstructionCollectionViewSource()
+            : base()
+        {
+          //  this.Filter += new FilterEventHandler(CustomFilter);
+        }
+
+        private void CustomFilter(object sender, FilterEventArgs args)
+        {
+            args.Accepted = false;
+        }
 
         #region INotifyPropertyChanged
         public event PropertyChangedEventHandler PropertyChanged;
@@ -26,5 +33,6 @@ namespace PointyStickBlend.Models
             }
         }
         #endregion
-    }   
+
+    }
 }

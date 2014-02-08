@@ -13,6 +13,14 @@ namespace PointyStickBlend.ViewModels
     public class InstructionViewModel : INotifyPropertyChanged
     {
 
+        Predicate<object> pi = (object i) => { return true; };
+
+        public Predicate<object> Filter
+        {
+            get { return pi; }
+            set { pi = value; }
+        }
+
         private InstructionModel model;
         public InstructionModel Model
         {
@@ -26,7 +34,6 @@ namespace PointyStickBlend.ViewModels
             Debug.WriteLine("Constructing InstructionViewModel.");
             IList<Instruction> list = new List<Instruction>();
             model = new InstructionModel(list);
-            
         }
 
         #region INotifyPropertyChanged

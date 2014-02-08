@@ -4,6 +4,7 @@
     x:Class="PointyStickBlend.MainWindow"
     x:Name="Window"
     xmlns:local="clr-namespace:PointyStickBlend" 
+    xmlns:InstructionCollectionViewSource="clr-namespace:PointyStickBlend.Standalone"
     Title="MainWindow"
     Width="640" Height="480"
     Icon="pointystick.jpg"
@@ -27,8 +28,8 @@
                     <MenuItem Header="Apply Filter" Click="apply_filters" />
                 </MenuItem>
             </Menu>
-            <Grid DataContext="{StaticResource cvs1}">
-                <DataGrid Name="results_grid" Margin="1,0,-1,0" ItemsSource="{Binding}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
+            <Grid Name="whole_grid" DataContext="{StaticResource cvs1}">
+                <DataGrid Name="results_grid" Margin="1,0,-1,0" ItemsSource="{Binding Mode=OneWay}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True">
                     <DataGrid.Columns>
                         <DataGridTextColumn Binding="{Binding Instruction_count}" ClipboardContentBinding="{x:Null}" Header="Instruction Count"/>
                         <DataGridTextColumn Binding="{Binding Address_disk, StringFormat={}{0:x8}}" ClipboardContentBinding="{x:Null}" Header="Disk Address "/>

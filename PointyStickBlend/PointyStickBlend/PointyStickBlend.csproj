@@ -72,6 +72,7 @@
     <Compile Include="RunWindow.xaml.cs">
       <DependentUpon>RunWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Standalone\InstructionCollectionViewSource.cs" />
     <Compile Include="ViewModels\InstructionViewModel.cs" />
     <Compile Include="ViewModels\LibraryViewModel.cs" />
     <Page Include="FilterWindow.xaml">
@@ -106,7 +107,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SampleData\" />
-    <Folder Include="Standalone\" />
     <Folder Include="Views\" />
   </ItemGroup>
   <ItemGroup>

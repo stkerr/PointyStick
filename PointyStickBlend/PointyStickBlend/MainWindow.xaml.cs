@@ -31,6 +31,10 @@ namespace PointyStickBlend
             this.InitializeComponent();
 
             // Insert code required on object creation below this point.
+
+            InstructionViewModel instruction_view_model = (InstructionViewModel)this.FindResource("instruction_view_model");
+            CollectionViewSource cvs1 = (CollectionViewSource)this.FindResource("cvs1");
+            cvs1.Filter += new FilterEventHandler(FilterRoutine);
         }
 
         private void exit_application(object sender, RoutedEventArgs e)
@@ -419,8 +423,7 @@ namespace PointyStickBlend
 
         private void apply_filters(object sender, RoutedEventArgs e)
         {
-            Predicate<object> pi = (object i) => { return ((Instruction)i).Library_name != null && ((Instruction)i).Library_name.Contains("exe"); };
-            results_grid.Items.Filter += pi;
+            
 
             LibraryViewModel global_library_list = (LibraryViewModel)this.FindResource("library_view_model");
             InstructionViewModel global_instruction_list = (InstructionViewModel)this.FindResource("instruction_view_model");
@@ -439,7 +442,32 @@ namespace PointyStickBlend
             }
             
             filter.Show();
+            filter.Closed += filter_Closed;
 
-        }       
+        }
+
+        void filter_Closed(object sender, EventArgs e)
+        {
+            CollectionViewSource cvs1 = (CollectionViewSource)this.FindResource("cvs1");
+            cvs1.Filter -= new FilterEventHandler(FilterRoutine);
+            cvs1.Filter += new FilterEventHandler(FilterRoutine);
+            
+            
+        }
+
+        public void FilterRoutine(object sender, FilterEventArgs e)
+        {
+            e.Accepted = true;
+
+            Instruction i = e.Item as Instruction;
+
+            UInt32 filter_instruction_low = (UInt32)this.FindResource("filter_instruction_low");
+
+            if (i.Address_execution < filter_instruction_low)
+                e.Accepted = false;
+
+            //e.Accepted = this.Filter.Invoke(i);
+            //e.Accepted = true;
+        }
     }
 }

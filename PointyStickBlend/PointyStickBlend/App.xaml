@@ -7,12 +7,14 @@
     xmlns:LibraryViewModel="clr-namespace:PointyStickBlend.ViewModels"
     xmlns:core="clr-namespace:System;assembly=mscorlib"
     xmlns:coredata="clr-namespace:System.Collections.Generic"
+    xmlns:InstructionCollectionViewSource="clr-namespace:PointyStickBlend.Standalone"
     >
     <Application.Resources>
         <ResourceDictionary>
-            <InstructionViewModel:InstructionViewModel x:Name="instruction_view_model" x:Key="instruction_view_model" />
+            <InstructionViewModel:InstructionViewModel x:Key="instruction_view_model" />
             <LibraryViewModel:LibraryViewModel x:Name="library_view_model" x:Key="library_view_model" />
-            <CollectionViewSource Source="{Binding Source={StaticResource instruction_view_model}, Path=Model}"  x:Key="cvs1" />
+            <InstructionCollectionViewSource:InstructionCollectionViewSource Source="{Binding Source={StaticResource instruction_view_model}, Path=Model}"  x:Key="cvs1" />
+            
             <x:Array Type="SolidColorBrush" x:Name="color_palette" x:Key="color_palette">
                 <SolidColorBrush Color="#f0e8cd" />
                 <SolidColorBrush Color="#dbd5b9" />
@@ -50,8 +52,8 @@
             <core:Int32 x:Key="filter_depth_low">-1000</core:Int32>
             <core:Int32 x:Key="filter_depth_high">0x10000000</core:Int32>
             <x:Array Type="core:String" x:Name="filter_libraries_included" x:Key="filter_libraries_include">
-            
             </x:Array>
+            
             <x:Array Type="core:String" x:Name="filter_threads_included" x:Key="filter_threads_included">
             </x:Array>
             
