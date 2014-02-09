@@ -23,6 +23,8 @@ namespace PointyStickBlend
     /// </summary>
     public partial class MainWindow : Window
     {
+        InstructionViewModel instruction_view_model;
+
         string logfile_name = "pintool.log";
         string supportfile_name = "support.log";
 
@@ -31,10 +33,7 @@ namespace PointyStickBlend
             this.InitializeComponent();
 
             // Insert code required on object creation below this point.
-
-            InstructionViewModel instruction_view_model = (InstructionViewModel)this.FindResource("instruction_view_model");
-            CollectionViewSource cvs1 = (CollectionViewSource)this.FindResource("cvs1");
-            cvs1.Filter += new FilterEventHandler(FilterRoutine);
+            instruction_view_model = (InstructionViewModel)this.FindResource("instruction_view_model");
         }
 
         private void exit_application(object sender, RoutedEventArgs e)
@@ -260,10 +259,9 @@ namespace PointyStickBlend
             Array color_palette = (Array)this.FindResource("color_palette");
 
             // Load the global model
-            InstructionViewModel global_instruction_list = (InstructionViewModel)this.FindResource("instruction_view_model");
 
             // Clear the model
-            global_instruction_list.Model.Clear();
+            instruction_view_model.Model.Clear();
 
             try
             {
@@ -356,7 +354,7 @@ namespace PointyStickBlend
                             }
 
                             // Add the instruction to the model
-                            global_instruction_list.Model.Add(i);
+                            instruction_view_model.Model.Add(i);
                         }
                     }
                 }
@@ -370,7 +368,6 @@ namespace PointyStickBlend
         private void combine_instruction_and_library_data()
         {
             // Load the global models
-            InstructionViewModel global_instruction_list = (InstructionViewModel)this.FindResource("instruction_view_model");
             LibraryViewModel global_library_list = (LibraryViewModel)this.FindResource("library_view_model");
 
 
@@ -379,7 +376,7 @@ namespace PointyStickBlend
              * 
              * This will probably be slow...
              */
-            foreach (Instruction i in global_instruction_list.Model)
+            foreach (Instruction i in instruction_view_model.Model)
             {
                 foreach (Library l in global_library_list.Model)
                 {
@@ -394,6 +391,8 @@ namespace PointyStickBlend
                                 i.System_call_name = export.Key;
                             }
                         }
+
+                        i.Address_disk = i.Address_execution - l.Address_execution + l.Address_disk;
 
                         break;
                     }
@@ -460,14 +459,39 @@ namespace PointyStickBlend
             e.Accepted = true;
 
             Instruction i = e.Item as Instruction;
-
+            
+            Boolean filter_instruction_low_enabled = (Boolean)this.FindResource("filter_instruction_low_enabled");
             UInt32 filter_instruction_low = (UInt32)this.FindResource("filter_instruction_low");
-
-            if (i.Address_execution < filter_instruction_low)
+            if (filter_instruction_low_enabled && i.Address_disk < filter_instruction_low)
                 e.Accepted = false;
 
-            //e.Accepted = this.Filter.Invoke(i);
-            //e.Accepted = true;
+            Boolean filter_instruction_high_enabled = (Boolean)this.FindResource("filter_instruction_high_enabled");
+            UInt32 filter_instruction_high = (UInt32)this.FindResource("filter_instruction_high");
+            if (filter_instruction_high_enabled && i.Address_disk > filter_instruction_high)
+                e.Accepted = false;
+
+            Boolean filter_depth_low_enabled = (Boolean)this.FindResource("filter_depth_low_enabled");
+            Int32 filter_depth_low = (Int32)this.FindResource("filter_depth_low");
+            if (filter_depth_low_enabled && i.Depth < filter_depth_low)
+                e.Accepted = false;
+
+            Boolean filter_depth_high_enabled = (Boolean)this.FindResource("filter_depth_high_enabled");
+            Int32 filter_depth_high = (Int32)this.FindResource("filter_depth_high");
+            if (filter_depth_high_enabled && i.Depth > filter_depth_high)
+                e.Accepted = false;
+
+            Boolean filter_libraries_included_enabled = (Boolean)this.FindResource("filter_libraries_included_enabled");
+            if (filter_libraries_included_enabled && !instruction_view_model.Library_names.Contains(i.Library_name))
+                e.Accepted = false;
+
+            Boolean filter_threads_included_enabled = (Boolean)this.FindResource("filter_threads_included_enabled");
+            if (filter_threads_included_enabled && !instruction_view_model.Thread_ids.Contains(i.Thread_id))
+                e.Accepted = false;
+
+            Boolean filter_system_calls_enabled = (Boolean)this.FindResource("filter_system_calls_enabled");
+            if(filter_system_calls_enabled && i.System_call_name != null && i.System_call_name != "")
+                e.Accepted = true;
+             
         }
     }
 }

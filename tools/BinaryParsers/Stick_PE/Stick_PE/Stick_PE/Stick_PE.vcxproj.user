@@ -3,11 +3,11 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LocalDebuggerCommandArguments>pintool.log</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
-    <LocalDebuggerWorkingDirectory>C:\Users\kerrs_000\Documents\Code\Pointystick\PointyStickBlend\PointyStickBlend\bin\Release</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>..\..\..\..\..\PointyStickBlend\PointyStickBlend\bin\Debug</LocalDebuggerWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerCommandArguments>pintool.log</LocalDebuggerCommandArguments>
-    <LocalDebuggerWorkingDirectory>C:\Users\kerrs_000\Documents\Code\Pointystick\PointyStickBlend\PointyStickBlend\bin\Release</LocalDebuggerWorkingDirectory>
+    <LocalDebuggerWorkingDirectory>..\..\..\..\..\PointyStickBlend\PointyStickBlend\bin\Release</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

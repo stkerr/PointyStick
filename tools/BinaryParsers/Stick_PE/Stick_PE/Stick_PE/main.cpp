@@ -46,8 +46,14 @@ int main(int argc, char* argv[])
         if (mode.compare("[LIB]") != 0)
             continue;
 
+        
+
         if (std::getline(line_stream, token, '|'))
         {
+            // ignore "Unloading" lines
+            if (token.find("Unloading") != std::string::npos)
+                continue;
+
             library_name = token;
 
             library_name = library_name.substr(library_name.find(':')+1, std::string::npos);

@@ -28,12 +28,29 @@ namespace PointyStickBlend.ViewModels
             set { model = value; }
         }
 
-        
+        List<uint> thread_ids;
+
+        public List<uint> Thread_ids
+        {
+            get { return thread_ids; }
+            set { thread_ids = value; }
+        }
+
+        List<String> library_names;
+
+        public List<String> Library_names
+        {
+            get { return library_names; }
+            set { library_names = value; }
+        }
+
         public InstructionViewModel()
         {
             Debug.WriteLine("Constructing InstructionViewModel.");
             IList<Instruction> list = new List<Instruction>();
             model = new InstructionModel(list);
+            library_names = new List<string>();
+            thread_ids = new List<uint>();
         }
 
         #region INotifyPropertyChanged

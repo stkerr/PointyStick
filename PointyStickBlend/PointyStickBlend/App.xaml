@@ -47,15 +47,21 @@
                 <SolidColorBrush Color="#fbb6d1" />
                 <SolidColorBrush Color="#f98cb6" />
             </x:Array>
+            <core:Boolean x:Key="filter_instruction_low_enabled">false</core:Boolean>
+            <core:Boolean x:Key="filter_instruction_high_enabled">false</core:Boolean>
+            <core:Boolean x:Key="filter_depth_low_enabled">false</core:Boolean>
+            <core:Boolean x:Key="filter_depth_high_enabled">false</core:Boolean>
+            <core:Boolean x:Key="filter_libraries_included_enabled">false</core:Boolean>
+            <core:Boolean x:Key="filter_threads_included_enabled">false</core:Boolean>
+            <core:Boolean x:Key="filter_system_calls_enabled">false</core:Boolean>
+
             <core:UInt32 x:Key="filter_instruction_low">0</core:UInt32>
             <core:UInt32 x:Key="filter_instruction_high">0xFFFFFFFF</core:UInt32>
             <core:Int32 x:Key="filter_depth_low">-1000</core:Int32>
             <core:Int32 x:Key="filter_depth_high">0x10000000</core:Int32>
-            <x:Array Type="core:String" x:Name="filter_libraries_included" x:Key="filter_libraries_include">
-            </x:Array>
             
-            <x:Array Type="core:String" x:Name="filter_threads_included" x:Key="filter_threads_included">
-            </x:Array>
+            <ItemsControl x:Name="filter_libraries_included" x:Key="filter_libraries_included" />
+            <ItemsControl x:Name="filter_threads_included" x:Key="filter_threads_included" />
             
         </ResourceDictionary>        
     </Application.Resources>
