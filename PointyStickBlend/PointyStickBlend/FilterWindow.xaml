@@ -28,30 +28,30 @@
 
 			<Label Grid.Column="0" Grid.Row="1" Content="Thread ID" />
 			<CheckBox x:Name="thread_id_enabled" Grid.Row="1" Grid.Column="1"/>
-			<ListBox Grid.Column="2" Grid.Row="1" x:Name="thread_id" SelectionMode="Extended" MaxHeight="300" />
+			<ListBox Grid.Column="2" Grid.Row="1" x:Name="thread_id" SelectionMode="Extended" MaxHeight="300" Margin="10,5" />
 
 			<Label Grid.Column="0" Grid.Row="2" Content="Library Name"/>
 			<CheckBox x:Name="library_name_enabled" Grid.Column="1" Grid.Row="2"/>
-			<ListBox Grid.Column="2" Grid.Row="2" x:Name="library_name" SelectionMode="Extended" MaxHeight="300" />
+			<ListBox Grid.Column="2" Grid.Row="2" x:Name="library_name" SelectionMode="Extended" MaxHeight="300" BorderThickness="1" Margin="10,5" />
 
 			<Label Grid.Column="0" Grid.Row="3" Content="Show All System Calls"/>
 			<CheckBox x:Name="system_call_enabled" Grid.Column="1" Grid.Row="3"/>
 
             <Label Grid.Column="0" Grid.Row="4" Content="Low Disk Instruction Address Cutoff (Hex)"/>
             <CheckBox x:Name="low_instruction_enabled" Grid.Column="1" Grid.Row="4"/>
-            <TextBox Grid.Column="2" Grid.Row="4" x:Name="low_instruction"/>
+            <TextBox Grid.Column="2" Grid.Row="4" x:Name="low_instruction" BorderThickness="1" Margin="10,5"/>
 
             <Label Grid.Column="0" Grid.Row="5" Content="High Disk Instruction Address Cutoff(Hex)"/>
             <CheckBox x:Name="high_instruction_enabled" Grid.Column="1" Grid.Row="5"/>
-            <TextBox Grid.Column="2" Grid.Row="5" x:Name="high_instruction"/>
+            <TextBox Grid.Column="2" Grid.Row="5" x:Name="high_instruction" BorderThickness="1" Margin="10,5"/>
 
             <Label Grid.Column="0" Grid.Row="6" Content="Low Depth Cutoff (Decimal)"/>
             <CheckBox x:Name="low_depth_enabled" Grid.Column="1" Grid.Row="6"/>
-            <TextBox Grid.Column="2" Grid.Row="6" x:Name="low_depth"/>
+            <TextBox Grid.Column="2" Grid.Row="6" x:Name="low_depth" BorderThickness="1" Margin="10,5"/>
 
             <Label Grid.Column="0" Grid.Row="7" Content="High Depth Cutoff (Decimal)"/>
             <CheckBox x:Name="high_depth_enabled" Grid.Column="1" Grid.Row="7"/>
-			<TextBox Grid.Column="2" Grid.Row="7" x:Name="high_depth"/>
+			<TextBox Grid.Column="2" Grid.Row="7" x:Name="high_depth" BorderThickness="1" Margin="10,5"/>
 
 			<Button Grid.Column="0" Grid.Row="10" Content="Apply Filters" Click="apply_filter_button"/>
         
