@@ -130,7 +130,8 @@ namespace PointyStickBlend
             }
             catch (FileNotFoundException ex)
             {
-                Debug.WriteLine("Could not load library trace support file.");
+                Debug.WriteLine("Could not load library trace support file: " + supportfile_name);
+                throw new FileNotFoundException("Could not load library trace support file " + supportfile_name);
             }
         }
 
@@ -247,7 +248,8 @@ namespace PointyStickBlend
             }
             catch(FileNotFoundException ex)
             {
-                Debug.WriteLine("Could not load libray file.");
+                Debug.WriteLine("Could not load libray file: " + logfile_name);
+                throw new FileNotFoundException("Could not load libray file: " + logfile_name);
             }
             
 
@@ -361,7 +363,8 @@ namespace PointyStickBlend
             }
             catch (FileNotFoundException ex)
             {
-                Debug.WriteLine("Could not open instruction tracefile.");
+                Debug.WriteLine("Could not open instruction tracefile: " + logfile_name);
+                throw new FileNotFoundException("Could not open instruction tracefile: " + logfile_name);
             }
         }
 
@@ -369,7 +372,6 @@ namespace PointyStickBlend
         {
             // Load the global models
             LibraryViewModel global_library_list = (LibraryViewModel)this.FindResource("library_view_model");
-
 
             /*
              * Iterate through each instruction and set the library name for it.
@@ -402,10 +404,26 @@ namespace PointyStickBlend
 
         private void process_pin_log(object sender, RoutedEventArgs e)
         {
-            load_instruction_tracefile();
-            load_library_tracefile();
-            load_library_support_tracefile();
-            combine_instruction_and_library_data();
+            try
+            {
+                load_instruction_tracefile();
+                load_library_tracefile();
+                load_library_support_tracefile();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Error during file parsing: " + ex.Message);
+            }
+
+            try
+            {
+                combine_instruction_and_library_data();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show("Error during combining library and instruction data: " + ex.Message);
+            }
+            
         }
 
         private void start_collection(object sender, RoutedEventArgs e)
@@ -493,5 +511,22 @@ namespace PointyStickBlend
                 e.Accepted = true;
              
         }
+
+        private void run_stick_pe(object sender, RoutedEventArgs e)
+        {
+            Process p = new Process();
+            p.EnableRaisingEvents = true;
+            p.StartInfo.FileName = "Stick_PE.exe";
+            p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.Arguments = logfile_name;
+            p.Start();
+            using (System.IO.StreamWriter file = new System.IO.StreamWriter(supportfile_name))
+            {
+                file.Write(p.StandardOutput.ReadToEnd());
+            }
+            p.WaitForExit();
+        }
+
     }
 }

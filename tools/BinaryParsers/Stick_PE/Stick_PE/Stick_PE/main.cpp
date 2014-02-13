@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
     std::ifstream input;
     input.open(argv[1]);
 
-    while (!input.eof())
+    while (input.is_open() && !input.eof())
     {
         // get the next line of the file
         std::getline(input, line);

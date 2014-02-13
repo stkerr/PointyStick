@@ -17,11 +17,9 @@
                 </MenuItem>
                 <MenuItem Header="_Collection">
                     <MenuItem Header="_Start Collection" Click="start_collection" />
+                    <MenuItem Header="Run PE Stick" Click="run_stick_pe" />
                 </MenuItem>
                 <MenuItem Header="_Data">
-                    <!--MenuItem Header="Load Instruction File" Click="load_instruction_tracefile" />
-                    <MenuItem Header="Load Library File" Click="load_library_tracefile" />
-                    <MenuItem Header="Integrate" Click="combine_instruction_and_library_data" /-->
                     <MenuItem Header="Process PIN log" Click="process_pin_log" />
                 </MenuItem>
                 <MenuItem Header="_Filtering">
