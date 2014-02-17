@@ -407,14 +407,33 @@ namespace PointyStickBlend
             try
             {
                 load_instruction_tracefile();
-                load_library_tracefile();
-                load_library_support_tracefile();
             }
             catch(Exception ex)
             {
-                MessageBox.Show("Error during file parsing: " + ex.Message);
+                MessageBox.Show("Error during instruction file parsing: " + ex.Message);
+                return;
             }
 
+            try
+            {
+                load_library_tracefile();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error during library file parsing: " + ex.Message);
+                return;
+            }
+
+            try
+            {
+                load_library_support_tracefile();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error during support file parsing: " + ex.Message);
+                return;
+            }
+            
             try
             {
                 combine_instruction_and_library_data();
@@ -422,6 +441,7 @@ namespace PointyStickBlend
             catch(Exception ex)
             {
                 MessageBox.Show("Error during combining library and instruction data: " + ex.Message);
+                return;
             }
             
         }

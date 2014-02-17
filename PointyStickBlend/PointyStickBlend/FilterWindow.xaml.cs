@@ -24,6 +24,43 @@ namespace PointyStickBlend
         public FilterWindow()
         {
             InitializeComponent();
+
+            /* Restore any existing filter state */
+            low_instruction_enabled.IsChecked = (bool)Application.Current.Resources["filter_instruction_low_enabled"];
+            if ((bool)low_instruction_enabled.IsChecked)
+                low_instruction.Text = (Application.Current.Resources["filter_instruction_low"]).ToString();
+            high_instruction_enabled.IsChecked = (bool)Application.Current.Resources["filter_instruction_high_enabled"];
+            if ((bool)high_instruction_enabled.IsChecked)
+                high_instruction.Text = (Application.Current.Resources["filter_instruction_high"]).ToString();
+            low_depth_enabled.IsChecked = (bool)Application.Current.Resources["filter_depth_low_enabled"];
+            if ((bool)low_depth_enabled.IsChecked)
+                low_depth.Text = (Application.Current.Resources["filter_depth_low"]).ToString();
+            high_depth_enabled.IsChecked = (bool)Application.Current.Resources["filter_depth_high_enabled"];
+            if ((bool)high_depth_enabled.IsChecked)
+                high_depth.Text = (Application.Current.Resources["filter_depth_high"]).ToString();
+            library_name_enabled.IsChecked = (bool)Application.Current.Resources["filter_libraries_included_enabled"];
+            if(library_name_enabled.IsChecked.HasValue && (bool)library_name_enabled.IsChecked)
+            {
+                InstructionViewModel ivm = (InstructionViewModel)this.FindResource("instruction_view_model");
+                library_name.SelectedItems.Clear();
+                foreach(string i in ivm.Library_names)
+                {
+                    library_name.SelectedItems.Add(i);
+                }
+            }
+            thread_id_enabled.IsChecked = (bool)Application.Current.Resources["filter_threads_included_enabled"];
+            if ((bool)thread_id_enabled.IsChecked)
+            {
+                InstructionViewModel ivm = (InstructionViewModel)this.FindResource("instruction_view_model");
+                thread_id.SelectedItems.Clear();
+                foreach (uint i in ivm.Thread_ids)
+                {
+                    thread_id.SelectedItems.Add(i);
+                }
+            }
+            system_call_enabled.IsChecked = (bool)Application.Current.Resources["filter_system_calls_enabled"];
+
+
         }
 
         private void apply_filter_button(object sender, RoutedEventArgs e)
@@ -110,6 +147,8 @@ namespace PointyStickBlend
 
                 }
             }
+
+            this.Close();
         }
     }
 }

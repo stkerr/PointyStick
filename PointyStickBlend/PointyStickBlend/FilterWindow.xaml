@@ -29,11 +29,11 @@
 
                 <Label Grid.Column="0" Grid.Row="1" Content="Thread ID" />
                 <CheckBox x:Name="thread_id_enabled" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center"/>
-                <ListBox Grid.Column="2" Grid.Row="1" x:Name="thread_id" SelectionMode="Extended" MaxHeight="300" Margin="10,5" MinHeight="200" />
+                <ListBox Grid.Column="2" Grid.Row="1" x:Name="thread_id" SelectionMode="Multiple" MaxHeight="300" Margin="10,5" MinHeight="200" />
 
                 <Label Grid.Column="0" Grid.Row="2" Content="Library Name"/>
                 <CheckBox x:Name="library_name_enabled" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center"/>
-                <ListBox Grid.Column="2" Grid.Row="2" x:Name="library_name" SelectionMode="Extended" MaxHeight="300" BorderThickness="1" Margin="10,5" MinHeight="200" />
+                <ListBox Grid.Column="2" Grid.Row="2" x:Name="library_name" SelectionMode="Multiple" MaxHeight="300" BorderThickness="1" Margin="10,5" MinHeight="200" />
 
                 <Label Grid.Column="0" Grid.Row="3" Content="Low Disk Instruction Address Cutoff (Hex)"/>
                 <CheckBox x:Name="low_instruction_enabled" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Center"/>
