@@ -16,12 +16,16 @@ bool initialize_events()
     {
         // NULL, so we need to make the event
         lock_monitoring = CreateEvent(0, true, false, "MONITORING");
+        if(lock_monitoring == 0)
+            return false;
     }
 
     lock_snapshot = OpenEvent(EVENT_ALL_ACCESS, false, "SNAPSHOT");
     if (lock_snapshot == 0)
     {
         lock_snapshot = CreateEvent(0, true, false, "SNAPSHOT");
+        if(lock_snapshot == 0)
+            return false;
     }
 
     return true;
@@ -30,7 +34,7 @@ bool initialize_events()
 bool event_monitoring_enabled()
 {
     int monitoring = WaitForSingleObject(lock_monitoring, 0);
-    printf("Monitoring event: %s\n", monitoring == WAIT_OBJECT_0 ? "ENABLED" : "DISABLED");
+    //printf("Monitoring event: %s\n", monitoring == WAIT_OBJECT_0 ? "ENABLED" : "DISABLED");
 
     if (monitoring == WAIT_OBJECT_0)
     {
@@ -81,7 +85,7 @@ void event_snapshot_set(bool status)
     int error = GetLastError();
     if (error)
     {
-        fprintf(stderr, "Snapshot event error: %d\n", status);
+        fprintf(stderr, "Snapshot event error: %d\n", error);
     }
 }
 

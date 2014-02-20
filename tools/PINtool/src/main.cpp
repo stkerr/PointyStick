@@ -8,6 +8,7 @@ KNOB<BOOL> KnobEnableInitialMonitoring(KNOB_MODE_OVERWRITE, "pintool", "enable_t
 KNOB<BOOL> KnobEnableMonitoring(KNOB_MODE_OVERWRITE, "pintool", "enable_region_monitoring", "false", "Enable a memory region to monitor for memory writes.\n");
 KNOB<int> KnobRegionStart(KNOB_MODE_OVERWRITE, "pintool", "region_start", "0", "Start of the region to monitor for memory writes.");
 KNOB<int> KnobRegionEnd(KNOB_MODE_OVERWRITE, "pintool", "region_end", "0", "End of the region to monitor for memory writes.");
+KNOB<string> KnobRegionName(KNOB_MODE_OVERWRITE,"pintool","region_name","","Name of the library the region resides in.");
 
 int Usage()
 {
@@ -24,8 +25,8 @@ int main(int argc, char** argv)
         return Usage();
     }
     
-    region_t r;
-    take_snapshot(&r);
+    // Set up the events
+    initialize_events();
     
     if(!KnobDisableLibraryTracing.Value())
     {
@@ -51,12 +52,19 @@ int main(int argc, char** argv)
     {
         int start = KnobRegionStart.Value();
         int end = KnobRegionEnd.Value();
-        
+        const char* library_name = KnobRegionName.Value().c_str();
+
+        printf("Library name: %s\n", library_name);
         printf("0x%x 0x%x\n", start, end);
+
+        region_t *r = (region_t*)malloc(sizeof(region_t));
+        r->start = (void*)start;
+        r->end = (void*)end;
+        strncpy(r->library_name, library_name, 260);
+        add_region_to_monitoring(r);
+
+        event_snapshot_set(true);
     }
-    
-    // Set up the events
-    initialize_events();
     
     // Start up the program to investigate.
     PIN_StartProgram();

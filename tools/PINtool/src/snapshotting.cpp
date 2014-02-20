@@ -9,6 +9,8 @@
 #define snprintf _snprintf
 #endif
 
+std::list<region_t*> regions_monitored;
+
 bool take_snapshot(region_t *region)
 {
     time_t current_time = time(0);
@@ -16,7 +18,7 @@ bool take_snapshot(region_t *region)
     
     char filename[260];
     
-    snprintf(filename, 260, "snapshot.%d.hex", (int)current_time);
+    snprintf(filename, 260, "snapshot.%s.0x%x.%d.hex", region->library_name, (int)region->start, (int)current_time);
 
     printf("%s\n", filename);
     FILE *fp = fopen(filename, "wb");
@@ -27,4 +29,11 @@ bool take_snapshot(region_t *region)
     fclose(fp);
 
     return true;
+}
+
+bool add_region_to_monitoring(region_t *region)
+{
+	regions_monitored.push_back(region);
+
+	return true;
 }

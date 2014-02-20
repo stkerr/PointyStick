@@ -1,5 +1,6 @@
 #include "PointyStick.h"
 #include "library_loaded.h"
+#include "region.h"
 #include <sstream>
 
 std::string img_type_to_string(IMG_TYPE type)
@@ -45,4 +46,17 @@ void library_loaded_function(IMG image, void* arg)
     logged << "\n";
 
     LOG(logged.str().c_str());
+
+    /*
+        Check if we are monitoring this region
+    */
+    std::list<region_t*>::iterator it;
+    for(it = regions_monitored.begin(); it != regions_monitored.end(); it++)
+    {
+        if(IMG_Name(image).find(std::string((*it)->library_name)) != std::string::npos)
+        {
+            printf("Found it: %s\n", IMG_Name(image));
+            (*it)->loaded_address = (void*)IMG_LowAddress(image);
+        }
+    }
 }
