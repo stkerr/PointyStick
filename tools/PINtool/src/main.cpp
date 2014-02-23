@@ -36,12 +36,6 @@ int main(int argc, char** argv)
         IMG_AddUnloadFunction(library_unloaded_function, 0);
     }
 
-    if(!KnobDisableInstructionTracing.Value())
-    {
-        printf("Enabling instruction tracing.\n");
-        INS_AddInstrumentFunction(instruction_trace, 0);
-    }
-    
     if(KnobEnableInitialMonitoring.Value())
     {
         printf("Enabling tracing on initialization.\n");
@@ -61,11 +55,17 @@ int main(int argc, char** argv)
         r->start = (void*)start;
         r->end = (void*)end;
         strncpy(r->library_name, library_name, 260);
+        printf("Added %s\n", r->library_name);
         add_region_to_monitoring(r);
 
         event_snapshot_set(true);
+
+        region_monitoring_enabled = true;
     }
     
+    // Add instrumentation. It handles both regions and instruction monitoring so must be enabled
+    INS_AddInstrumentFunction(instruction_trace, 0);
+
     // Start up the program to investigate.
     PIN_StartProgram();
 

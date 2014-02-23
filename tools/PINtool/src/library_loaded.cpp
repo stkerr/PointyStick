@@ -50,12 +50,13 @@ void library_loaded_function(IMG image, void* arg)
     /*
         Check if we are monitoring this region
     */
+
     std::list<region_t*>::iterator it;
     for(it = regions_monitored.begin(); it != regions_monitored.end(); it++)
     {
+        printf("%s\n%s\n", IMG_Name(image), (*it)->library_name);
         if(IMG_Name(image).find(std::string((*it)->library_name)) != std::string::npos)
         {
-            printf("Found it: %s\n", IMG_Name(image));
             (*it)->loaded_address = (void*)IMG_LowAddress(image);
         }
     }

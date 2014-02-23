@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -115,7 +116,7 @@ namespace PointyStickBlend
              */
             if(tracing_checkbox.IsChecked == false)
             {
-                command_string += "-notrace ";
+                command_string += "-disable_instruction_trace ";
             }
             else
             {
@@ -128,6 +129,22 @@ namespace PointyStickBlend
             /*
              * Region Monitoring Settings
              */
+            if(regionmonitoring_checkbox.IsChecked == true)
+            {
+                command_string += "-enable_region_monitoring ";
+                UInt32 region_start;
+                UInt32 region_end;
+                if(!UInt32.TryParse(regionmonitoring_start.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out region_start))
+                    throw new Exception("Region startaddresses not valid. Hex format, no prefix.");
+                
+                if(!UInt32.TryParse(regionmonitoring_end.Text, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out region_end))
+                    throw new Exception("Region end addresses not valid. Hex format, no prefix.");
+
+                command_string += "-region_start " + region_start + " ";
+                command_string += "-region_end " + region_end + " ";
+                command_string += "-region_name " + textbox_filename.Text + " ";
+
+            }
 
             /*
              * Append the application name
@@ -151,7 +168,10 @@ namespace PointyStickBlend
                     instrumented_process.StartInfo.Arguments = command_string;
                     instrumented_process.EnableRaisingEvents = true;
                     instrumented_process.Exited += new EventHandler(instrumented_exited);
-                    instrumented_process.Start();
+                    if(!instrumented_process.Start())
+                    {
+                        throw new Exception("Couldn't start process");
+                    }
 
                     if (instrumented_process == null)
                     {

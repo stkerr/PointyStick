@@ -21,4 +21,6 @@ typedef struct _region_t
 
 bool region_contains(region_t *region, void* address);
 
+extern bool region_monitoring_enabled;
+
 #endif
