@@ -154,10 +154,18 @@ namespace PointyStickBlend
             /*
              * Start the PIN tool
              */
+            string pin_root;
             try
             {
-                string pin_root = System.Environment.GetEnvironmentVariable("PIN_ROOT");
+                pin_root = System.Environment.GetEnvironmentVariable("PIN_ROOT");
+            }
+            catch(ArgumentNullException ex)
+            {
+                throw new ArgumentNullException("PIN_ROOT environment variable not set! Please install PIN and set PIN_ROOT.");
+            }
 
+            try
+            {
                 if (pin_root.CompareTo("") == 0)
                 {
                     MessageBox.Show("Please define the environment variable PIN_ROOT and restart the application.");

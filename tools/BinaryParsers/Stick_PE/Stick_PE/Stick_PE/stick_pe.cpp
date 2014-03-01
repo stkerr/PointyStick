@@ -69,7 +69,7 @@ void get_exports(std::string filename)
 
     if (exports->NumberOfNames == 0)
     {
-        std::cout << "No names, but there ARE " << exports->NumberOfFunctions << " exports." << std::endl;
+        std::cout << "Info|No names, but there ARE " << exports->NumberOfFunctions << " exports." << std::endl;
         return;
     }
 
