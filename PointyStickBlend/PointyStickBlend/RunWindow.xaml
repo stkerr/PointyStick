@@ -100,7 +100,7 @@
                     <Label Grid.Row="5" />
                     
                     <!-- Terminate Application -->
-                    <Button Content="Terminate Application" Margin="0,10" Grid.Row="6" Grid.Column="2" />
+                    <Button Content="Terminate Application" Margin="0,10" Grid.Row="6" Grid.Column="2" Click="terminate_application"/>
                     
                 </Grid>
             </TabItem>

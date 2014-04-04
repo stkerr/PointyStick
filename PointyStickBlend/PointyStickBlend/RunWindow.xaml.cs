@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Management;
 
 namespace PointyStickBlend
 {
@@ -199,7 +200,7 @@ namespace PointyStickBlend
             switch (instrumented_process.ExitCode)
             {
                 case -1:
-                    MessageBox.Show("Couldn't locate target application.");
+                    MessageBox.Show("Couldn't locate or start target application.\nIs the tool 32-bit and the applicaton 64-bit or vice versa?\nCheck pin.log for additional information.");
                     break;
                 case 0:
                     break;
@@ -211,6 +212,43 @@ namespace PointyStickBlend
                     break;
             }
             
+        }
+
+
+        private static void KillProcessAndChildren(int pid)
+        {
+            /*
+             * From http://stackoverflow.com/questions/5901679/kill-process-tree-programatically-in-c-sharp
+             */
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher("Select * From Win32_Process Where ParentProcessID=" + pid);
+            ManagementObjectCollection moc = searcher.Get();
+            foreach (ManagementObject mo in moc)
+            {
+                KillProcessAndChildren(Convert.ToInt32(mo["ProcessID"]));
+            }
+            try
+            {
+                Process proc = Process.GetProcessById(pid);
+                proc.Kill();
+            }
+            catch (ArgumentException)
+            {
+                // Process already exited.
+            }
+        }
+
+        private void terminate_application(object o, RoutedEventArgs e)
+        {
+            if (instrumented_process == null)
+                return;
+            instrumented_process.Exited -= new EventHandler(instrumented_exited);
+            try
+            {
+
+                KillProcessAndChildren(instrumented_process.Id);
+            }
+            catch(InvalidOperationException ex)
+            { }
         }
 
         private bool enable_tracing()
