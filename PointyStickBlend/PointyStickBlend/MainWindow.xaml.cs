@@ -116,9 +116,20 @@ namespace PointyStickBlend
                                     export_name = key;
                                     uint export_address_parsed;
                                     if (UInt32.TryParse(value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out export_address_parsed))
-                                        current_library.Exports.Add(key, export_address_parsed);
+                                    {
+                                        try
+                                        {
+                                            current_library.Exports.Add(key, export_address_parsed);
+                                        }
+                                        catch(Exception except)
+                                        {
+                                            Debug.WriteLine(except.Message);
+                                        }
+                                    }
                                     else
                                         Debug.WriteLine("Couldn't parse export address " + value);
+                                    break;
+                                case "Info": // Ignore info lines
                                     break;
                                 default:
                                     Debug.WriteLine("Key " + key + " not handled.");
@@ -240,8 +251,18 @@ namespace PointyStickBlend
                                 l.Size_execution = end_address - start_address;
 
 
-                            // Add the library to the model
-                            global_library_list.Model.Add(l);
+                            // Add the library to the model. Make sure its not already in there though (in case it was loaded, unloaded, and reloaded)
+                            bool already_exists = false;
+                            foreach(Library library_iterator in global_library_list.Model)
+                            {
+                                if(library_iterator.Library_name == l.Library_name)
+                                {
+                                    already_exists = true;
+                                    Debug.WriteLine("Library already inside list. Stopping");
+                                }
+                            }
+                            if(!already_exists)
+                                global_library_list.Model.Add(l);
                         }
                     }
                 }

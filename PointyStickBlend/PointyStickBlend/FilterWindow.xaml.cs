@@ -28,10 +28,18 @@ namespace PointyStickBlend
             /* Restore any existing filter state */
             low_instruction_enabled.IsChecked = (bool)Application.Current.Resources["filter_instruction_low_enabled"];
             if ((bool)low_instruction_enabled.IsChecked)
-                low_instruction.Text = (Application.Current.Resources["filter_instruction_low"]).ToString();
+            {
+                uint filter_low;
+                UInt32.TryParse(Application.Current.Resources["filter_instruction_low"].ToString(), out filter_low);
+                low_instruction.Text = filter_low.ToString("X");
+            }
             high_instruction_enabled.IsChecked = (bool)Application.Current.Resources["filter_instruction_high_enabled"];
             if ((bool)high_instruction_enabled.IsChecked)
-                high_instruction.Text = (Application.Current.Resources["filter_instruction_high"]).ToString();
+            {
+                uint filter_high;
+                UInt32.TryParse(Application.Current.Resources["filter_instruction_high"].ToString(), out filter_high);
+                high_instruction.Text = filter_high.ToString("X");
+            }
             low_depth_enabled.IsChecked = (bool)Application.Current.Resources["filter_depth_low_enabled"];
             if ((bool)low_depth_enabled.IsChecked)
                 low_depth.Text = (Application.Current.Resources["filter_depth_low"]).ToString();
