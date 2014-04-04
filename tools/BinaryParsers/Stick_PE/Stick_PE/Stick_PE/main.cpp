@@ -9,6 +9,7 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <list>
 
 #include "stick_pe.h"
 
@@ -24,6 +25,8 @@ int main(int argc, char* argv[])
     std::string line;
     std::ifstream input;
     input.open(argv[1]);
+
+    std::list<std::string> library_names;
 
     while (input.is_open() && !input.eof())
     {
@@ -55,14 +58,34 @@ int main(int argc, char* argv[])
                 continue;
 
             library_name = token;
-
             library_name = library_name.substr(library_name.find(':')+1, std::string::npos);
-
             trim(library_name);
         }
 
         if (library_name.length() == 0)
             continue;
+
+        // if we have already processed this library, don't do it again.
+        std::list<std::string>::iterator it;
+        bool already_processed = false;
+        for (it = library_names.begin(); it != library_names.end(); it++)
+        {
+            if ((*it).compare(library_name) == 0)
+            {
+                already_processed = true;
+                break;
+            }
+        }
+        if (already_processed)
+        {
+            std::cout << "Already processed: " << library_name << std::endl;
+            break;
+        }
+        else
+        {
+            std::cout << "Not processed: " << library_name << std::endl;
+            library_names.push_back(library_name);
+        }
 
         // print out this libraries header
         std::cout << library_name << std::endl;
