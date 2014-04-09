@@ -4,6 +4,7 @@
 
 static int depth = 0;
 static int instruction_count = 0;
+static int snapshot_count = 0;
 
 void instruction_trace(INS ins, void* arg)
 {
@@ -44,6 +45,11 @@ void instruction_trace(INS ins, void* arg)
         // check if a snapshot was requested
         if(event_snapshot_enabled())
         {
+            std::ostringstream message;
+            message << "[INFO] | Took snapshot " << snapshot_count++;
+            message << "\n";
+            LOG(message.str().c_str());
+
             take_all_snapshots();
             event_snapshot_set(false);
         }

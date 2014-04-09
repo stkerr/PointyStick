@@ -288,6 +288,8 @@ namespace PointyStickBlend
 
             try
             {
+                bool instructions_added = false;
+
                 using (FileStream fs = new FileStream(logfile_name, FileMode.Open))
                 {
                     using (StreamReader sr = new StreamReader(fs))
@@ -377,9 +379,15 @@ namespace PointyStickBlend
                             }
 
                             // Add the instruction to the model
+                            instructions_added = true;
                             instruction_view_model.Model.Add(i);
                         }
                     }
+                }
+                
+                if(!instructions_added)
+                {
+                    throw new Exception("No instructions exist inside log file!");
                 }
             }
             catch (FileNotFoundException ex)
@@ -387,6 +395,7 @@ namespace PointyStickBlend
                 Debug.WriteLine("Could not open instruction tracefile: " + logfile_name);
                 throw new FileNotFoundException("Could not open instruction tracefile: " + logfile_name);
             }
+
         }
 
         private void combine_instruction_and_library_data()

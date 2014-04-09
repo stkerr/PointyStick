@@ -302,5 +302,11 @@ namespace PointyStickBlend
                 snapshot_status_label.Content = "Disabled";
             }
         }
+
+        private void snapshot_button_Click(object sender, RoutedEventArgs e)
+        {
+            // set the snapshot event
+            SetEvent(event_snapshot);
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿<Window x:Class="PointyStickBlend.FilterWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="FilterWindow" Height="700" Width="600">
+        Title="FilterWindow" MinHeight="500" Width="600">
     <Grid>
         <ScrollViewer>
             <Grid>
@@ -29,11 +29,11 @@
 
                 <Label Grid.Column="0" Grid.Row="1" Content="Thread ID" />
                 <CheckBox x:Name="thread_id_enabled" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center"/>
-                <ListBox Grid.Column="2" Grid.Row="1" x:Name="thread_id" SelectionMode="Multiple" MaxHeight="300" Margin="10,5" MinHeight="200" />
+                <ListBox Grid.Column="2" Grid.Row="1" x:Name="thread_id" SelectionMode="Multiple" MaxHeight="200" Margin="10,5" MinHeight="50" />
 
                 <Label Grid.Column="0" Grid.Row="2" Content="Library Name"/>
                 <CheckBox x:Name="library_name_enabled" Grid.Column="1" Grid.Row="2" HorizontalAlignment="Center"/>
-                <ListBox Grid.Column="2" Grid.Row="2" x:Name="library_name" SelectionMode="Multiple" MaxHeight="300" BorderThickness="1" Margin="10,5" MinHeight="200" />
+                <ListBox Grid.Column="2" Grid.Row="2" x:Name="library_name" SelectionMode="Multiple" MaxHeight="300" BorderThickness="1" Margin="10,5" MinHeight="50" />
 
                 <Label Grid.Column="0" Grid.Row="3" Content="Low Disk Instruction Address Cutoff (Hex)"/>
                 <CheckBox x:Name="low_instruction_enabled" Grid.Column="1" Grid.Row="3" HorizontalAlignment="Center"/>
@@ -54,7 +54,7 @@
                 <Label Grid.Column="0" Grid.Row="7" Content="Show All System Calls"/>
                 <CheckBox x:Name="system_call_enabled" Grid.Column="1" Grid.Row="7" HorizontalAlignment="Center"/>
 
-                <Button Grid.Column="0" Grid.Row="10" Content="Apply Filters" Click="apply_filter_button"/>
+                <Button Grid.Column="0" Grid.Row="9" Content="Apply Filters" Click="apply_filter_button"/>
 
 
             </Grid>

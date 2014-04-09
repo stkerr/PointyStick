@@ -91,6 +91,33 @@ to point to the directory Intel PIN is stored in.
 - I used 2.13.62732
    - Older versions may work and newer versions should also work
 
+Using Pointy Stick
+------------------
+Using PointyStick consists of the following steps:
+
+1. Load your program into Pointy Stick
+   * Open the "Collection" menu, select "Start Collection"
+   * Click "Open File" and select your application.
+      * If there is a space in your application path, you MUST enclose it in quotation marks.
+1. Start the program under Pointy Stick
+   1. Specify regions to monitor
+      * Check the 'Enable Region Monitoring' checkbox and enter the addresses that you wish to monitor in your application.
+      * During execution, snapshots wil be automatically taken, but you can manually trigger a snapshot by clicking the "Take Snapshot" button under the "Runtime Control" tab.
+   1. Enable tracing if desired
+      * Check the "Enable Tracing" box to allow program tracing.
+      * If desired, select "Trace from Start" to trace from the start of the program
+      * During execution, under the "Runtime Control" tab, click the "Enable Tracing" or "Disable Tracing" button to enable or disable tracing, respectively.
+   1. Click "Start Collection" and interact with your program.
+1. End the application
+   * You can use the "Terminate Application" button under the "Runtime Control" tab or end the application manually.
+1. Generate the program support file.
+   * After execution is finished, select "Run PE Stick" under the "Collection" menu.
+   * If you like, you can look at the produced support.log file that is produced.
+1. View the logs
+   * Under the "Data" menu tab, click "Process PIN log". The GUI will refresh with the log file data loaded.
+1. Filter the logfiles
+   * Under the "Filtering" tab on the menu bar, click "Filtering" and you will be presented with several different filtering options.
+
 Building Pointy Stick from Source (Windows)
 --------------------------------------------------------
 
@@ -121,6 +148,14 @@ Building Pointy Stick from Source (Windows)
 1. Change to the PointyStickBlend/ directory.
 1. Execute 'msbuild'.
    * Or open the Solution file and build it  
+
+Troubleshooting
+---------------
+If you have run into errors, check the following:
+
+1. That the PIN_ROOT environment variable is set and is pointing to 
+root of the version of PIN you are using.
+1. Check out the pintool.log and pin.log filee, if they were produced, in the directory where PointyStickBlend.exe is. These logs will most likely hold useful error messages.
 
 Ideas for the future
 --------------------
