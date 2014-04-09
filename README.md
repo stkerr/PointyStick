@@ -127,10 +127,15 @@ Building Pointy Stick from Source (Windows)
     * I used 2.13.62732
        * Older versions may work and newer versions should also work
 1. Visual Studio 2013
+    * This is to build the GUI tool and support tool.
+1. Visual Studio 2012
+    * This is to build the PIN tool.
+    * You can use Visual Studio 2010, 2008 or others, depending on which version of PIN you are using.
 
 
 ### Building the PIN tool
 1. Open a Visual Studio 2012 developer command prompt.
+    * Or whichever version corresponds to the PIN version you are using.
 1. Change to the tools/PINtools/ directory.
 1. Make sure that the PIN_ROOT environment variable is defined.
 1. Execute build.sh.
@@ -140,7 +145,7 @@ Building Pointy Stick from Source (Windows)
    * NOT 2012 on this one!
 1. Change to the tools/BinaryParsers/Stick_PE/Stick_PE directory.
 1. Execute 'msbuild'.
-   * Or open the Solution file and build it
+   * Or open the Solution file and build it.
 
 ### Building the GUI
 1. Open a Visual Studio 2013 developer command prompt.
