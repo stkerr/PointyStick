@@ -6,6 +6,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include <string.h> /* memset */
+
 #ifdef TARGET_WINDOWS
 #define snprintf _snprintf
 #endif

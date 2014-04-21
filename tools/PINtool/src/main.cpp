@@ -1,5 +1,9 @@
 #include "pin.H"
+#include <stdlib.h>
 #include <stdio.h>
+
+#include <string.h> /* strncpy */
+
 #include "PointyStick.h"
 
 KNOB<BOOL> KnobDisableLibraryTracing(KNOB_MODE_OVERWRITE, "pintool", "disable_library_trace", "false", "Disable logging of library loads.");
