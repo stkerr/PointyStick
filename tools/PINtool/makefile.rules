@@ -80,6 +80,8 @@ ifeq ($(UNAME), Darwin)
 # This is needed to make Mac OS X 10.9 build successfully, since Clang changed the
 # standard library, so revert to the GNU one
 TOOL_LDFLAGS += -stdlib=libstdc++
+else # Unix
+TOOL_LDFLAGS += -lpthread
 endif
 endif
 
