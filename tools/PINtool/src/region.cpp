@@ -1,6 +1,6 @@
 #include "region.h"
 
-extern bool region_monitoring_enabled = false;
+bool region_monitoring_enabled = false;
 
 bool region_contains(region_t *region, void* address)
 {
