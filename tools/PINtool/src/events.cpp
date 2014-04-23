@@ -1,4 +1,5 @@
 #include "events.h"
+#include <stdlib.h>
 #include <stdio.h>
 
 static bool event_monitoring = false;
@@ -91,6 +92,8 @@ void event_snapshot_set(bool status)
 
 
 #elif defined(TARGET_MAC) || defined(TARGET_LINUX)
+#include <fcntl.h>
+#include <unistd.h>
 #include <semaphore.h>
 static sem_t *lock_monitoring;
 static sem_t *lock_snapshot;

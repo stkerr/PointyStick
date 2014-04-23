@@ -59,7 +59,7 @@ void instruction_trace(INS ins, void* arg)
         {
 
             // check each operand to find the changing address
-            for(int i = 0; i < INS_OperandCount(ins); i++)
+            for(unsigned int i = 0; i < INS_OperandCount(ins); i++)
             {
                 if(INS_MemoryOperandIsWritten(ins, i))
                 {
