@@ -48,12 +48,12 @@ int main(int argc, char** argv)
     
     if(KnobEnableMonitoring.Value())
     {
-        int start = KnobRegionStart.Value();
-        int end = KnobRegionEnd.Value();
+        long start = KnobRegionStart.Value();
+        long end = KnobRegionEnd.Value();
         const char* library_name = KnobRegionName.Value().c_str();
 
         printf("Library name: %s\n", library_name);
-        printf("0x%x 0x%x\n", start, end);
+        printf("0x%lx 0x%lx\n", start, end);
 
         region_t *r = (region_t*)malloc(sizeof(region_t));
         r->start = (void*)start;

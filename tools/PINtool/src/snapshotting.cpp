@@ -31,8 +31,8 @@ static int snapshot_count = 0;
 bool take_snapshot(region_t *region)
 {
     
-    char* region_start = (int)(region->start) + (char*)(region->loaded_address);
-    char* region_end = (int)(region->end) + (char*)(region->loaded_address);
+    char* region_start = (long)(region->start) + (char*)(region->loaded_address);
+    char* region_end = (long)(region->end) + (char*)(region->loaded_address);
     
     // Patch up the library name to allow it to be written to file systems (colons and slashes)
     std::string lib_name = std::string(region->library_name);
@@ -41,7 +41,7 @@ bool take_snapshot(region_t *region)
     std::replace(lib_name.begin(), lib_name.end(), '\\', '_');
 
     memset(filename,0,260);
-    snprintf(filename, 260, "snapshot.%s.0x%x.%d.hex", lib_name.c_str(), region_start, snapshot_count);
+    snprintf(filename, 260, "snapshot.%s.0x%lx.%d.hex", lib_name.c_str(), (unsigned long)region_start, snapshot_count);
     
     FILE *fp = fopen(filename, "wb");
     for (char* i = region_start; i != region_end; i++)
