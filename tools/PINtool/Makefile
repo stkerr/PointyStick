@@ -21,8 +21,7 @@ endif
 ifdef PIN_ROOT
 CONFIG_ROOT := $(PIN_ROOT)/source/tools/Config
 else
-all:
-	@echo Please define PIN_ROOT.
+$(error Please define the PIN_ROOT environment variable)
 endif
 
 include $(CONFIG_ROOT)/makefile.config
