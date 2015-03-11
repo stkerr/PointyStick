@@ -1,20 +1,52 @@
 import wx
 import wx.grid
 
-class PointyStickFrame(wx.Frame):
+class Collector(object):
+    def __init__(self):
+        self.binary_path = None
+
+    def set_instrumented_binary_path(self, path):
+        self.binary_path = path
+
+    def start_instrumentation(self):
+        raise NotImplementedError
+
+    def stop_instrumentation(self):
+        raise NotImplementedError
+
+class BasicUserInteraction(object):
+    def __init__(self):
+        pass
+
+    def on_close(self, e):
+        self.Destroy()
+
+    def on_about(self, e):
+        dialog = wx.MessageDialog(self, "Pointy Stick: A tool to analyze running binaries.\nConceived and written by Whistlepig.", "Pointy Stick", wx.OK)
+        dialog.ShowModal()
+        dialog.Destroy()
+
+class PointyStickFrame(wx.Frame, Collector, BasicUserInteraction):
     def __init__(self, parent, title):
+        super(Collector, self).__init__()
+        super(BasicUserInteraction, self).__init__()
+
         wx.Frame.__init__(self, parent, title=title)
-        # self.control = wx.TextCtrl(self, style=wx.TE_MULTILINE)
-        
 
         filemenu = wx.Menu()
-        filemenu.Append(wx.ID_OPEN, "Set Instrumented Binary")
+        self.Bind(wx.EVT_MENU,
+            self.get_instrumented_file,
+            filemenu.Append(wx.ID_OPEN, "Set Instrumented Binary")
+        )
         self.Bind(wx.EVT_MENU,
             self.on_about,
             filemenu.Append(wx.ID_ABOUT, "&About", "Information about this program")
         )
         filemenu.AppendSeparator()
-        filemenu.Append(wx.ID_EXIT, "E&xit", "Terminate the program")
+        self.Bind(wx.EVT_MENU,
+            self.on_close,
+            filemenu.Append(wx.ID_EXIT, "E&xit", "Terminate the program")
+        )
 
         collectionmenu = wx.Menu()
         
@@ -131,10 +163,11 @@ class PointyStickFrame(wx.Frame):
         self.splitter.SetSashInvisible(False)
         self.splitter.SetMinimumPaneSize(200)
 
-    def on_about(self, e):
-        dialog = wx.MessageDialog(self, "Pointy Stick: A tool to analyze running binaries.\nConceived and written by Whistlepig.", "Pointy Stick", wx.OK)
+    def get_instrumented_file(self, e):
+        dialog = wx.FileDialog(self)
         dialog.ShowModal()
-        dialog.Destroy()
+        path = dialog.GetFilename()
+        self.set_instrumented_binary_path(path)
 
 app = wx.App(False)
 frame = PointyStickFrame(None, "Pointy Stick")
