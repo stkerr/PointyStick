@@ -155,7 +155,7 @@ namespace PointyStickBlend
             /*
              * Start the PIN tool
              */
-            string pin_root;
+            string pin_root="";
             try
             {
                 pin_root = System.Environment.GetEnvironmentVariable("PIN_ROOT");
@@ -167,7 +167,7 @@ namespace PointyStickBlend
 
             try
             {
-                if (pin_root.CompareTo("") == 0)
+                if (pin_root == null || pin_root.CompareTo("") == 0)
                 {
                     MessageBox.Show("Please define the environment variable PIN_ROOT and restart the application.");
                 }
