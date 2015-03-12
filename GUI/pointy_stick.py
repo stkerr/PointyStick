@@ -1,22 +1,61 @@
 import wx
 import wx.grid
+import subprocess
+import thread
+import time
 
 class Collector(object):
-    def __init__(self):
-        self.binary_path = None
+    def __init__(self, nop, title):
+        '''
+        The nop arguments are needed to support the mutiple inheritance
+        model with other classes that use init parameters.
+        '''
+        super(Collector, self).__init__(nop, title=title)
+        self.binary_path = "C:\\windows\\system32\\calc"
+        self.pin_tool_path = 
+        self.instrumented_process = None
 
+        # Collection options
+        self.instruction_tracing = False
+        self.snapshot_queued = False
+
+    def set_pin_tool_path(self, path):
+        self.pin_tool_path = path
+        
     def set_instrumented_binary_path(self, path):
         self.binary_path = path
 
-    def start_instrumentation(self):
-        raise NotImplementedError
+    def start_instrumentation(self,e):        
+        self.instrumented_process = subprocess.Popen(self.binary_path)
 
-    def stop_instrumentation(self):
-        raise NotImplementedError
+    def stop_instrumentation(self,e):
+        try:
+            self.instrumented_process.kill()
+        except Exception, e:
+            raise
+
+    def enable_instruction_tracing(self, e):
+        self.instruction_tracing = True
+
+    def disable_instruction_tracing(self, e):
+        self.instruction_tracing = False
+
+    def toggle_instruction_tracing(self, e):
+        if self.instruction_tracing:
+            self.instruction_tracing = False
+        else:
+            self.instruction_tracing = True
+    
+    def queue_snapshot(self, e):
+        self.snapshot_queued = True
 
 class BasicUserInteraction(object):
-    def __init__(self):
-        pass
+    def __init__(self, nop, title):
+        '''
+        The nop arguments are needed to support the mutiple inheritance
+        model with other classes that use init parameters.
+        '''
+        super(BasicUserInteraction, self).__init__(nop, title=title)
 
     def on_close(self, e):
         self.Destroy()
@@ -26,12 +65,9 @@ class BasicUserInteraction(object):
         dialog.ShowModal()
         dialog.Destroy()
 
-class PointyStickFrame(wx.Frame, Collector, BasicUserInteraction):
+class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
     def __init__(self, parent, title):
-        super(Collector, self).__init__()
-        super(BasicUserInteraction, self).__init__()
-
-        wx.Frame.__init__(self, parent, title=title)
+        super(PointyStickFrame, self).__init__(parent, title=title)
 
         filemenu = wx.Menu()
         self.Bind(wx.EVT_MENU,
@@ -53,13 +89,25 @@ class PointyStickFrame(wx.Frame, Collector, BasicUserInteraction):
         collectionmenu.Append(wx.ID_ANY, "Region Controls")
         collectionmenu.Append(wx.ID_ANY, "Instruction Tracing Controls")
         collectionmenu.AppendSeparator()
-        collectionmenu.Append(wx.ID_ANY, "&Start Collection", "Initiate the collection")
+        self.Bind(wx.EVT_MENU,
+            self.start_instrumentation,
+            collectionmenu.Append(wx.ID_ANY, "&Start Collection", "Initiate the collection")
+        )
 
         runtimemenu = wx.Menu()
-        runtimemenu.Append(wx.ID_ANY, "Take &Snapshot", "Take a snapshot of the memory region.")
-        runtimemenu.Append(wx.ID_ANY, "Toggle &Instruction Tracing", "Toggle instruction tracing on and off.")
+        self.Bind(wx.EVT_MENU,
+            self.queue_snapshot,
+            runtimemenu.Append(wx.ID_ANY, "Take &Snapshot", "Take a snapshot of the memory region.")
+        )
+        self.Bind(wx.EVT_MENU,
+            self.toggle_instruction_tracing,
+            runtimemenu.Append(wx.ID_ANY, "Toggle &Instruction Tracing", "Toggle instruction tracing on and off.")
+        )
         runtimemenu.AppendSeparator()
-        runtimemenu.Append(wx.ID_ANY, "&Terminate Instrumented Application", "Terminate the instrumented application.")
+        self.Bind(wx.EVT_MENU,
+            self.stop_instrumentation,
+            runtimemenu.Append(wx.ID_ANY, "&Terminate Instrumented Application", "Terminate the instrumented application.")
+        )
 
         analysismenu = wx.Menu()
         analysismenu.Append(wx.ID_ANY, "Load &Logfile", "Load a logfile from the PIN tool")
@@ -80,6 +128,23 @@ class PointyStickFrame(wx.Frame, Collector, BasicUserInteraction):
         self.SetStatusText("Tracing Disabled", 2)
 
         self.Show(True)
+
+        self.polling_thread = thread.start_new_thread(self.status_bar_polling, ())
+
+    def status_bar_polling(self):
+        while True:
+
+            if self.instruction_tracing:
+                self.SetStatusText("Tracing Enabled", 2)
+            else:
+                self.SetStatusText("Tracing Disabled", 2)
+
+            if self.snapshot_queued:
+                self.SetStatusText("Snapshot Queued", 1)
+            else:
+                self.SetStatusText("No Snapshot Queued", 1)
+
+            time.sleep(0.1)
 
     def create_filter_split(self):
         self.splitter = wx.SplitterWindow(self)
