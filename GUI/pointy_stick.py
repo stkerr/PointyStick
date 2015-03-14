@@ -3,6 +3,9 @@ import wx.grid
 import subprocess
 import thread
 import time
+import os
+import platform
+import sys
 
 class Collector(object):
     def __init__(self, nop, title):
@@ -12,12 +15,16 @@ class Collector(object):
         '''
         super(Collector, self).__init__(nop, title=title)
         self.binary_path = "C:\\windows\\system32\\calc"
-        self.pin_tool_path = 
+        
+        self.pin_tool_path = os.environ["PIN_ROOT"]
         self.instrumented_process = None
 
         # Collection options
         self.instruction_tracing = False
         self.snapshot_queued = False
+
+        # Disable tracing by default
+        self.disable_instruction_tracing()
 
     def set_pin_tool_path(self, path):
         self.pin_tool_path = path
@@ -34,20 +41,102 @@ class Collector(object):
         except Exception, e:
             raise
 
-    def enable_instruction_tracing(self, e):
-        self.instruction_tracing = True
+    def enable_instruction_tracing(self):
 
-    def disable_instruction_tracing(self, e):
-        self.instruction_tracing = False
+        if sys.platform == 'win32':
+            import ctypes
+            self.monitoring_event_handle = ctypes.windll.kernel32.OpenEventA(0x1F0003, # EVENT_ALL_ACCESS
+                True, "MONITORING")
+            error = ctypes.windll.kernel32.GetLastError()
+            if error == 2: # ERROR_FILE_NOT_FOUND
+                '''
+                Failed to open the event, so create it
+                '''
+                self.monitoring_event_handle = ctypes.windll.kernel32.CreateEventA(
+                    None,
+                    True,
+                    False,
+                    "MONITORING"
+                )
+            if self.monitoring_event_handle == 0 or self.monitoring_event_handle == None:
+                error = ctypes.windll.kernel32.GetLastError()
+                raise SystemError("Failed to open monitoring event. CreateEventA() error: " + error)
+
+            # Signal the snapshot event
+            ctypes.windll.kernel32.SetEvent(self.monitoring_event_handle)
+
+        else:
+            raise NotImplementedError
+
+    def disable_instruction_tracing(self):
+
+        if sys.platform == 'win32':
+            import ctypes
+            self.monitoring_event_handle = ctypes.windll.kernel32.OpenEventA(0x1F0003, # EVENT_ALL_ACCESS
+                True, "MONITORING")
+            error = ctypes.windll.kernel32.GetLastError()
+            if error == 2: # ERROR_FILE_NOT_FOUND
+                '''
+                Failed to open the event, so create it
+                '''
+                self.monitoring_event_handle = ctypes.windll.kernel32.CreateEventA(
+                    None,
+                    True,
+                    False,
+                    "MONITORING"
+                )
+            if self.monitoring_event_handle == 0 or self.monitoring_event_handle == None:
+                error = ctypes.windll.kernel32.GetLastError()
+                raise SystemError("Failed to open monitoring event. CreateEventA() error: " + error)
+
+            # Signal the snapshot event
+            ctypes.windll.kernel32.ResetEvent(self.monitoring_event_handle)
+
+        else:
+            raise NotImplementedError
 
     def toggle_instruction_tracing(self, e):
-        if self.instruction_tracing:
-            self.instruction_tracing = False
+        if sys.platform == 'win32':
+            try:
+                if self.monitoring_event_handle:
+                    import ctypes
+                    status = ctypes.windll.kernel32.WaitForSingleObject(self.monitoring_event_handle, 0)        
+                    if status == 0: # WAIT_OBJECT_0
+                        self.disable_instruction_tracing()
+                    else:
+                        self.enable_instruction_tracing()
+            except AttributeError as e:
+                pass
         else:
-            self.instruction_tracing = True
-    
+            raise NotImplementedError()
+
     def queue_snapshot(self, e):
         self.snapshot_queued = True
+
+        if sys.platform == 'win32':
+            import ctypes
+            self.snapshot_event_handle = ctypes.windll.kernel32.OpenEventA(0x1F0003, # EVENT_ALL_ACCESS
+                True, "SNAPSHOT")
+            error = ctypes.windll.kernel32.GetLastError()
+            if error == 2: # ERROR_FILE_NOT_FOUND
+                '''
+                Failed to open the event, so create it
+                '''
+                self.snapshot_event_handle = ctypes.windll.kernel32.CreateEventA(
+                    None,
+                    True,
+                    False,
+                    "SNAPSHOT"
+                )
+            if self.snapshot_event_handle == 0 or self.snapshot_event_handle == None:
+                error = ctypes.windll.kernel32.GetLastError()
+                raise SystemError("Failed to open snapshot event. CreateEventA() error: " + error)
+
+            # Signal the snapshot event
+            ctypes.windll.kernel32.SetEvent(self.snapshot_event_handle)
+        else:
+            raise NotImplementedError
+
 
 class BasicUserInteraction(object):
     def __init__(self, nop, title):
@@ -68,6 +157,11 @@ class BasicUserInteraction(object):
 class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
     def __init__(self, parent, title):
         super(PointyStickFrame, self).__init__(parent, title=title)
+
+        if "PIN_ROOT" not in os.environ or os.environ["PIN_ROOT"] == "":
+            dialog = wx.MessageDialog(self, "PIN_ROOT environment variable is not defined. Please define it and restart Pointy Stick.", "Pointy Stick", wx.OK)
+            dialog.ShowModal()
+            dialog.Destroy()
 
         filemenu = wx.Menu()
         self.Bind(wx.EVT_MENU,
@@ -133,16 +227,33 @@ class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
 
     def status_bar_polling(self):
         while True:
-
-            if self.instruction_tracing:
-                self.SetStatusText("Tracing Enabled", 2)
+            if sys.platform == 'win32':
+                try:
+                    if self.monitoring_event_handle:
+                        import ctypes
+                        status = ctypes.windll.kernel32.WaitForSingleObject(self.monitoring_event_handle, 0)        
+                        if status == 0: # WAIT_OBJECT_0
+                            self.SetStatusText("Tracing Enabled", 2)
+                        else:
+                            self.SetStatusText("Tracing Disabled", 2)
+                except AttributeError as e:
+                    pass
             else:
-                self.SetStatusText("Tracing Disabled", 2)
+                raise NotImplementedError()    
 
-            if self.snapshot_queued:
-                self.SetStatusText("Snapshot Queued", 1)
+            if sys.platform == 'win32':
+                try:
+                    if self.snapshot_event_handle:
+                        import ctypes
+                        status = ctypes.windll.kernel32.WaitForSingleObject(self.snapshot_event_handle, 0)        
+                        if status == 0: # WAIT_OBJECT_0
+                            self.SetStatusText("Snapshot Queued", 1)
+                        else:
+                            self.SetStatusText("No Snapshot Queued", 1)
+                except AttributeError as e:
+                    pass
             else:
-                self.SetStatusText("No Snapshot Queued", 1)
+                raise NotImplementedError()
 
             time.sleep(0.1)
 
@@ -176,7 +287,6 @@ class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
         sizer = wx.BoxSizer(wx.VERTICAL)
         sizer.Add(results_grid, 1, wx.EXPAND)
         results_panel.SetSizerAndFit(sizer)
-
 
         filter_panel = wx.Window(self.splitter)
         thread_id_label = wx.StaticText(filter_panel, -1, 'Thread ID')

@@ -264,9 +264,6 @@
     <ClCompile Include="src\snapshotting.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\README" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="src\address_helpers.h" />
     <ClInclude Include="src\events.h" />
     <ClInclude Include="src\instruction_trace.h" />
