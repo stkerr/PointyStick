@@ -22,10 +22,13 @@ class Analyzer(object):
         if fields[0] == '[INS]':
             data['type'] = 'instruction'
             for f in fields[1:]:
-                key,value = f.split(':')
+                key,value = str(f.split(':')[0]), ''.join(f.split(':')[1:])
                 data[key.strip()] = value.strip()
         elif fields[0] == '[LIB]':
-            pass
+            data['type'] = 'library'
+            for f in fields[1:]:
+                key,value = str(f.split(':')[0]), ''.join(f.split(':')[1:])
+                data[key.strip()] = value.strip()
         else:
             pass
 
@@ -36,6 +39,7 @@ class Analyzer(object):
         data = logfile.readlines()
 
         self.results_grid.ClearGrid()
+        self.library_name_field.Clear()
 
         line_data = []
 
@@ -62,6 +66,8 @@ class Analyzer(object):
 
         self.results_grid.AppendRows(len(line_data))
 
+        libraries = {}
+
         status_intervals = [x for x in range(0, 101, 5)]
         row_count = 0
         for line in line_data:
@@ -85,6 +91,19 @@ class Analyzer(object):
                 # self.results_grid.SetCellValue(row_count, 6, row_count) # System Call Name
 
                 row_count = row_count + 1
+
+            if 'type' in line and line['type'] == 'library':
+                if 'Name' in line:
+
+                    libraries[line['Name']] = {}
+                    libraries[line['Name']]['address_execution'] = line['Mapd']
+                    libraries[line['Name']]['address_disk'] = line['Low']
+                    libraries[line['Name']]['library_name'] = line['Name']
+                    libraries[line['Name']]['exports'] = []
+                    libraries[line['Name']]['size_execution'] = int(line['High'],16) - int(line['Low'],16)
+                    libraries[line['Name']]['size_disk'] = int(line['High'],16) - int(line['Low'],16)
+                    
+        self.library_name_field.Set(libraries.keys())
 
         logfile.close()
 
@@ -343,10 +362,17 @@ class PointyStickFrame(Collector, BasicUserInteraction, Analyzer, wx.Frame):
 
     def create_filter_split(self):
         self.splitter = wx.SplitterWindow(self)
+        self.filter_splitter = wx.SplitterWindow(self.splitter)
+        self.sub_filter_splitter = wx.SplitterWindow(self.filter_splitter)
 
         results_panel = wx.Window(self.splitter)
+        filter_panel = wx.Window(self.splitter)
         
         self.results_grid = wx.grid.Grid(results_panel)
+        filter_staticsize_panel = wx.Window(self.filter_splitter)
+
+        thread_id_panel = wx.Window(self.sub_filter_splitter)
+        library_name_panel = wx.Window(self.sub_filter_splitter)
 
         columns_to_insert = [
             # "Instruction Count",
@@ -372,55 +398,80 @@ class PointyStickFrame(Collector, BasicUserInteraction, Analyzer, wx.Frame):
         sizer.Add(self.results_grid, 1, wx.EXPAND)
         results_panel.SetSizerAndFit(sizer)
 
-        filter_panel = wx.Window(self.splitter)
-        thread_id_label = wx.StaticText(filter_panel, -1, 'Thread ID')
-        thread_id_field = wx.ListBox(filter_panel, size=(-1,-1))
-
-        address_cutoff_low_label = wx.StaticText(filter_panel, -1, 'Address Cutoff - Low')
-        address_cutoff_low = wx.TextCtrl(filter_panel)
+        address_cutoff_low_label = wx.StaticText(filter_staticsize_panel, -1, 'Address Cutoff - Low')
+        address_cutoff_low = wx.TextCtrl(filter_staticsize_panel)
         
-        address_cutoff_high_label = wx.StaticText(filter_panel, -1, 'Address Cutoff - High')
-        address_cutoff_high = wx.TextCtrl(filter_panel)
+        address_cutoff_high_label = wx.StaticText(filter_staticsize_panel, -1, 'Address Cutoff - High')
+        address_cutoff_high = wx.TextCtrl(filter_staticsize_panel)
 
-        depth_cutoff_low_label = wx.StaticText(filter_panel, -1, 'Depth Cutoff - Low')
-        depth_cutoff_low = wx.TextCtrl(filter_panel)
-
-        depth_cutoff_high_label = wx.StaticText(filter_panel, -1, 'Depth Cutoff - High')
-        depth_cutoff_high = wx.TextCtrl(filter_panel)
-
-        system_calls_enabled_label = wx.StaticText(filter_panel, -1, 'All System Calls Visible')
-        system_calls_enabled = wx.CheckBox(filter_panel)
-
-        library_name_field_label = wx.StaticText(filter_panel, -1, 'Library Name')
-        library_name_field = wx.ListBox(filter_panel)
-
-        filter_sizer = wx.BoxSizer(wx.VERTICAL)
-        filter_sizer.Add(thread_id_label, flag=wx.ALIGN_CENTER_HORIZONTAL)
-        filter_sizer.Add(thread_id_field, flag=wx.EXPAND) 
-        
-        filter_sizer.Add(library_name_field_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
-        filter_sizer.Add(library_name_field, flag=wx.EXPAND)
-        
-        filter_sizer.Add(address_cutoff_low_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
-        filter_sizer.Add(address_cutoff_low, flag=wx.EXPAND) 
-        
-        filter_sizer.Add(address_cutoff_high_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
-        filter_sizer.Add(address_cutoff_high, flag=wx.EXPAND) 
-        
-        filter_sizer.Add(depth_cutoff_low_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
-        filter_sizer.Add(depth_cutoff_low, flag=wx.EXPAND) 
-        
-        filter_sizer.Add(depth_cutoff_high_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
-        filter_sizer.Add(depth_cutoff_high, flag=wx.EXPAND) 
-        
-        filter_sizer.Add(system_calls_enabled_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
-        filter_sizer.Add(system_calls_enabled, flag=wx.EXPAND) 
-        filter_panel.SetSizer(filter_sizer)
-
-        self.splitter.SplitVertically(results_panel, filter_panel, -200)
+        depth_cutoff_low_label = wx.StaticText(filter_staticsize_panel, -1, 'Depth Cutoff - Low')
+        depth_cutoff_low = wx.TextCtrl(filter_staticsize_panel)
+        self.splitter.SplitVertically(results_panel, self.filter_splitter, -200)
         self.splitter.SetSashGravity(1) # Don't resize filter panel
         self.splitter.SetSashInvisible(False)
         self.splitter.SetMinimumPaneSize(200)
+
+        depth_cutoff_high_label = wx.StaticText(filter_staticsize_panel, -1, 'Depth Cutoff - High')
+        depth_cutoff_high = wx.TextCtrl(filter_staticsize_panel)
+        
+        system_calls_enabled_label = wx.StaticText(filter_staticsize_panel, -1, 'All System Calls Visible')
+        system_calls_enabled = wx.CheckBox(filter_staticsize_panel)
+
+        library_name_field_label = wx.StaticText(library_name_panel, -1, 'Library Name')
+        self.library_name_field = wx.ListBox(library_name_panel)
+
+        thread_id_label = wx.StaticText(thread_id_panel, -1, 'Thread ID')
+        thread_id_field = wx.ListBox(thread_id_panel, size=(-1,-1))
+
+        filter_dynamic_sizer = wx.BoxSizer(wx.VERTICAL)
+        filter_dynamic_sizer.Add(thread_id_label, flag=wx.ALIGN_CENTER_HORIZONTAL)
+        filter_dynamic_sizer.Add(thread_id_field, flag=wx.EXPAND) 
+        filter_dynamic_sizer.Add(library_name_field_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_dynamic_sizer.Add(self.library_name_field, flag=wx.EXPAND)
+        self.sub_filter_splitter.SetSizer(filter_dynamic_sizer)
+
+        filter_static_sizer = wx.BoxSizer(wx.VERTICAL)
+        filter_static_sizer.Add(address_cutoff_low_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(address_cutoff_low, flag=wx.EXPAND) 
+        filter_static_sizer.Add(address_cutoff_high_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(address_cutoff_high, flag=wx.EXPAND) 
+        filter_static_sizer.Add(depth_cutoff_low_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(depth_cutoff_low, flag=wx.EXPAND) 
+        filter_static_sizer.Add(depth_cutoff_high_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(depth_cutoff_high, flag=wx.EXPAND) 
+        filter_static_sizer.Add(system_calls_enabled_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(system_calls_enabled, flag=wx.EXPAND)
+        filter_staticsize_panel.SetSizer(filter_static_sizer)
+
+        filter_sizer = wx.BoxSizer(wx.VERTICAL)
+        filter_sizer.Add(filter_staticsize_panel)
+        filter_sizer.Add(self.sub_filter_splitter)
+        filter_panel.SetSizer(filter_sizer)
+
+        self.splitter.SplitVertically(results_panel, filter_panel, -200)
+        self.splitter.SetSashGravity(1)
+        self.splitter.SetSashInvisible(False)
+        self.splitter.SetMinimumPaneSize(200)
+
+        self.filter_splitter.SplitHorizontally(filter_staticsize_panel, self.sub_filter_splitter, 0)
+        self.filter_splitter.SetSashGravity(1)
+        self.filter_splitter.SetSashInvisible(False)
+        self.filter_splitter.SetMinimumPaneSize(200)
+
+        self.sub_filter_splitter.SplitHorizontally(thread_id_panel, library_name_panel, 0)
+        self.sub_filter_splitter.SetSashGravity(1)
+        self.sub_filter_splitter.SetSashInvisible(False)
+        self.sub_filter_splitter.SetMinimumPaneSize(20)
+
+        library_sizer = wx.BoxSizer(wx.VERTICAL)
+        library_sizer.Add(library_name_field_label)
+        library_sizer.Add(self.library_name_field)
+        library_name_panel.SetSizer(library_sizer)
+
+        threadid_sizer = wx.BoxSizer(wx.VERTICAL)
+        threadid_sizer.Add(thread_id_label)
+        threadid_sizer.Add(thread_id_field)
+        thread_id_panel.SetSizer(threadid_sizer)
 
     def get_instrumented_file(self, e):
         dialog = wx.FileDialog(self)
