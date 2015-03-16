@@ -7,6 +7,87 @@ import os
 import platform
 import sys
 
+class Analyzer(object):
+    def __init__(self, nop, title):
+        super(Analyzer, self).__init__(nop, title=title)
+        self.logfile_path = 'pintool.log'
+
+    def parse_line(self, line):
+        fields = line.split('|')
+        fields = [f.strip() for f in fields]
+        fields = filter(lambda x: x != None, fields)
+        fields = filter(lambda x: x != "", fields)
+
+        data = {}
+        if fields[0] == '[INS]':
+            data['type'] = 'instruction'
+            for f in fields[1:]:
+                key,value = f.split(':')
+                data[key.strip()] = value.strip()
+        elif fields[0] == '[LIB]':
+            pass
+        else:
+            pass
+
+        return data
+
+    def load_logfile(self, e, status_bar_index=1):
+        logfile = open(self.logfile_path, 'r')
+        data = logfile.readlines()
+
+        self.results_grid.ClearGrid()
+
+        line_data = []
+
+        status_intervals = [x for x in range(0, 101, 5)]
+
+        data_file_count = 0
+        for row in data:
+            percent_done = 100.0 * data_file_count / len(data)
+            if percent_done > status_intervals[0] or row == data[-1]:
+                # Update the status bar with progress
+                self.SetStatusText("Parsing Status: " + str(status_intervals[0]) + "% Complete.", status_bar_index)
+                status_intervals = status_intervals[1:]
+
+            # self.SetStatusText(("Parsing Data line %s/%s" % (data_file_count, len(data))), status_bar_index)
+
+            try:
+                line_data.append(self.parse_line(row))
+            except Exception as e:
+                pass
+
+            data_file_count = data_file_count + 1
+
+        line_data = filter(lambda x: x != {}, line_data)
+
+        self.results_grid.AppendRows(len(line_data))
+
+        status_intervals = [x for x in range(0, 101, 5)]
+        row_count = 0
+        for line in line_data:
+
+            percent_done = 100.0 * row_count / len(line_data)
+            if percent_done > status_intervals[0] or line == line_data[-1]:
+                # Update the status bar with progress
+                self.SetStatusText("Display Status: " + str(status_intervals[0]) + "% Complete.", status_bar_index)
+                status_intervals = status_intervals[1:]
+
+            if 'type' in line and line['type'] == 'instruction':
+                
+                
+                # self.results_grid.SetCellValue(row_count, 0, line['cnt']) # Instruction Count
+                # self.results_grid.SetCellValue(row_count, 0, row_count) # Disk Address
+                self.results_grid.SetCellValue(row_count, 1, line['adr']) # Execution Address
+                self.results_grid.SetCellValue(row_count, 2, line['dth']) # Depth
+                # self.results_grid.SetCellValue(row_count, 3, row_count) # Library Name
+                self.results_grid.SetCellValue(row_count, 4, line['tid']) # Thread ID
+                self.results_grid.SetCellValue(row_count, 5, line['tme']) # Time
+                # self.results_grid.SetCellValue(row_count, 6, row_count) # System Call Name
+
+                row_count = row_count + 1
+
+        logfile.close()
+
 class Collector(object):
     def __init__(self, nop, title):
         '''
@@ -16,7 +97,7 @@ class Collector(object):
         super(Collector, self).__init__(nop, title=title)
         self.binary_path = "C:\\windows\\system32\\calc"
         
-        self.pin_tool_path = os.environ["PIN_ROOT"]
+        self.pin_tool_path = os.environ['PIN_ROOT']
         self.instrumented_process = None
 
         # Collection options
@@ -33,7 +114,7 @@ class Collector(object):
         self.binary_path = path
 
     def start_instrumentation(self,e):        
-        self.instrumented_process = subprocess.Popen(self.binary_path)
+        self.instrumented_process = subprocess.Popen([os.environ['PIN_ROOT'] + os.sep + 'pin', '-t', 'PointyStick.dll', '--', self.binary_path])
 
     def stop_instrumentation(self,e):
         try:
@@ -154,7 +235,7 @@ class BasicUserInteraction(object):
         dialog.ShowModal()
         dialog.Destroy()
 
-class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
+class PointyStickFrame(Collector, BasicUserInteraction, Analyzer, wx.Frame):
     def __init__(self, parent, title):
         super(PointyStickFrame, self).__init__(parent, title=title)
 
@@ -204,7 +285,10 @@ class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
         )
 
         analysismenu = wx.Menu()
-        analysismenu.Append(wx.ID_ANY, "Load &Logfile", "Load a logfile from the PIN tool")
+        self.Bind(wx.EVT_MENU,
+            self.load_logfile,
+            analysismenu.Append(wx.ID_ANY, "Load &Logfile", "Load a logfile from the PIN tool")
+        )
 
         menubar = wx.MenuBar()
         menubar.Append(filemenu, "&File")
@@ -216,10 +300,10 @@ class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
         self.create_filter_split()
 
         self.CreateStatusBar()
-        self.StatusBar.SetFieldsCount(3)
-        self.StatusBar.SetStatusWidths([-2,-1,-1])
-        self.SetStatusText("No Snapshot Queued", 1)
-        self.SetStatusText("Tracing Disabled", 2)
+        self.StatusBar.SetFieldsCount(4)
+        self.StatusBar.SetStatusWidths([-2,-1,-1,-1])
+        self.SetStatusText("No Snapshot Queued", 2)
+        self.SetStatusText("Tracing Disabled", 3)
 
         self.Show(True)
 
@@ -262,10 +346,10 @@ class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
 
         results_panel = wx.Window(self.splitter)
         
-        results_grid = wx.grid.Grid(results_panel)
+        self.results_grid = wx.grid.Grid(results_panel)
 
         columns_to_insert = [
-            "Instruction Count",
+            # "Instruction Count",
             "Disk Address",
             "Execution Address",
             "Depth",
@@ -275,17 +359,17 @@ class PointyStickFrame(Collector, BasicUserInteraction, wx.Frame):
             "System Call Name"
         ]
 
-        results_grid.CreateGrid(1,len(columns_to_insert))
-        results_grid.EnableEditing(False)
+        self.results_grid.CreateGrid(1,len(columns_to_insert))
+        self.results_grid.EnableEditing(False)
         i = 0
         for col in columns_to_insert:
-            results_grid.SetColLabelValue(i, col)
-            results_grid.AutoSizeColumn(i)
+            self.results_grid.SetColLabelValue(i, col)
+            self.results_grid.AutoSizeColumn(i)
 
             i = i+1
 
         sizer = wx.BoxSizer(wx.VERTICAL)
-        sizer.Add(results_grid, 1, wx.EXPAND)
+        sizer.Add(self.results_grid, 1, wx.EXPAND)
         results_panel.SetSizerAndFit(sizer)
 
         filter_panel = wx.Window(self.splitter)
