@@ -414,32 +414,33 @@ class PointyStickFrame(Collector, BasicUserInteraction, Analyzer, wx.Frame):
         depth_cutoff_high_label = wx.StaticText(filter_staticsize_panel, -1, 'Depth Cutoff - High')
         depth_cutoff_high = wx.TextCtrl(filter_staticsize_panel)
         
-        system_calls_enabled_label = wx.StaticText(filter_staticsize_panel, -1, 'All System Calls Visible')
+        system_calls_enabled_label = wx.StaticText(filter_staticsize_panel, -1, 'System Calls Always Visible')
         system_calls_enabled = wx.CheckBox(filter_staticsize_panel)
 
-        library_name_field_label = wx.StaticText(library_name_panel, -1, 'Library Name')
-        self.library_name_field = wx.ListBox(library_name_panel)
+        self.library_name_field_label = wx.StaticText(library_name_panel, -1, 'Library Name')
+        self.library_name_field = wx.ListBox(library_name_panel, style=wx.LB_MULTIPLE | wx.LB_SORT | wx.LB_HSCROLL)
 
         thread_id_label = wx.StaticText(thread_id_panel, -1, 'Thread ID')
-        thread_id_field = wx.ListBox(thread_id_panel, size=(-1,-1))
+        thread_id_field = wx.ListBox(thread_id_panel, size=(-1,-1), style=wx.LB_MULTIPLE | wx.LB_SORT | wx.LB_HSCROLL)
 
         filter_dynamic_sizer = wx.BoxSizer(wx.VERTICAL)
-        filter_dynamic_sizer.Add(thread_id_label, flag=wx.ALIGN_CENTER_HORIZONTAL)
+        filter_dynamic_sizer.Add(thread_id_label)
         filter_dynamic_sizer.Add(thread_id_field, flag=wx.EXPAND) 
-        filter_dynamic_sizer.Add(library_name_field_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_dynamic_sizer.Add(self.library_name_field_label) 
         filter_dynamic_sizer.Add(self.library_name_field, flag=wx.EXPAND)
         self.sub_filter_splitter.SetSizer(filter_dynamic_sizer)
+        self.sub_filter_splitter.Fit()
 
         filter_static_sizer = wx.BoxSizer(wx.VERTICAL)
-        filter_static_sizer.Add(address_cutoff_low_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(address_cutoff_low_label) 
         filter_static_sizer.Add(address_cutoff_low, flag=wx.EXPAND) 
-        filter_static_sizer.Add(address_cutoff_high_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(address_cutoff_high_label) 
         filter_static_sizer.Add(address_cutoff_high, flag=wx.EXPAND) 
-        filter_static_sizer.Add(depth_cutoff_low_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(depth_cutoff_low_label) 
         filter_static_sizer.Add(depth_cutoff_low, flag=wx.EXPAND) 
-        filter_static_sizer.Add(depth_cutoff_high_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(depth_cutoff_high_label) 
         filter_static_sizer.Add(depth_cutoff_high, flag=wx.EXPAND) 
-        filter_static_sizer.Add(system_calls_enabled_label, flag=wx.ALIGN_CENTER_HORIZONTAL) 
+        filter_static_sizer.Add(system_calls_enabled_label) 
         filter_static_sizer.Add(system_calls_enabled, flag=wx.EXPAND)
         filter_staticsize_panel.SetSizer(filter_static_sizer)
 
@@ -464,14 +465,15 @@ class PointyStickFrame(Collector, BasicUserInteraction, Analyzer, wx.Frame):
         self.sub_filter_splitter.SetMinimumPaneSize(20)
 
         library_sizer = wx.BoxSizer(wx.VERTICAL)
-        library_sizer.Add(library_name_field_label)
-        library_sizer.Add(self.library_name_field)
+        library_sizer.Add(self.library_name_field_label, proportion=0, border=5)
+        library_sizer.Add(self.library_name_field, proportion=1, flag=wx.EXPAND | wx.ALL, border=5)
         library_name_panel.SetSizer(library_sizer)
 
         threadid_sizer = wx.BoxSizer(wx.VERTICAL)
-        threadid_sizer.Add(thread_id_label)
-        threadid_sizer.Add(thread_id_field)
+        threadid_sizer.Add(thread_id_label, proportion=0, border=5)
+        threadid_sizer.Add(thread_id_field, proportion=1, flag=wx.EXPAND | wx.ALL, border=5)
         thread_id_panel.SetSizer(threadid_sizer)
+
 
     def get_instrumented_file(self, e):
         dialog = wx.FileDialog(self)

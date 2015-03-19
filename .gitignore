@@ -47,3 +47,6 @@ PointyStickBlend/PointyStickBlend/obj/*
 tools/PINtool/obj-ia32
 tools/BinaryParsers/Stick_PE/Stick_PE/Debug
 tools/BinaryParsers/Stick_PE/Stick_PE/Stick_PE/Debug
+*.exp
+*.tlog
+*.lastbuildstate
