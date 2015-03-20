@@ -7,6 +7,44 @@ import os
 import platform
 import sys
 
+class StickParser(object):
+    def __init__(self):
+        super(StickParser, self).__init__()
+
+    def parse(self, logdata):
+        data = {}
+        for block in logdata.split(os.linesep + os.linesep):
+            lines = block.split(os.linesep)
+            if len(lines) < 2:
+                continue
+
+            lines = lines[1:]
+            block_name = lines[0]
+            lines = lines[1:]
+    
+            if block_name not in data.keys():
+                data[block_name] = {}
+
+            for line in block.split(os.linesep):
+                line = line.strip()
+                try:
+                    key,value = line.split('|',1)
+                except:
+                    continue
+
+                if key == 'Base':
+                    data[block_name]['base'] = int(value,16)
+                elif key == 'Export':
+
+                    if 'exports' not in data[block_name]:
+                        data[block_name]['exports'] = {}
+                    name,address = value.split(':',1)
+                    data[block_name]['exports'][name] = address
+
+        import pprint
+        # print pprint.pprint(data)
+        return data
+
 class Analyzer(object):
     def __init__(self, nop, title):
         super(Analyzer, self).__init__(nop, title=title)
@@ -22,17 +60,25 @@ class Analyzer(object):
         if fields[0] == '[INS]':
             data['type'] = 'instruction'
             for f in fields[1:]:
-                key,value = str(f.split(':')[0]), ''.join(f.split(':')[1:])
+                key,value = f.split(':',1)
                 data[key.strip()] = value.strip()
         elif fields[0] == '[LIB]':
             data['type'] = 'library'
             for f in fields[1:]:
-                key,value = str(f.split(':')[0]), ''.join(f.split(':')[1:])
+                key,value = f.split(':',1)
                 data[key.strip()] = value.strip()
         else:
-            pass
+            print 'Skipping line: %s' % line
 
         return data
+
+    def run_stick_parser(self, stick="..\\tools\\BinaryParsers\\Stick_PE\\Stick_PE\\Debug\\Stick_PE.exe"):
+        stick_result = subprocess.Popen([stick,self.logfile_path], stdout=subprocess.PIPE)
+        output = stick_result.stdout.read()
+
+        stick_parser = StickParser()
+        stick_data = stick_parser.parse(output)
+        return stick_data
 
     def load_logfile(self, e, status_bar_index=1):
         logfile = open(self.logfile_path, 'r')
@@ -66,12 +112,54 @@ class Analyzer(object):
 
         self.results_grid.AppendRows(len(line_data))
 
+        self.SetStatusText("Running Stick Utility...", status_bar_index)
+        stick_data = self.run_stick_parser()
+
+        status_intervals = [x for x in range(0, 101, 5)]
+        row_count = 0
         libraries = {}
+        for line in line_data:
+            percent_done = 100.0 * row_count / len(line_data)
+            if percent_done > status_intervals[0] or line == line_data[-1]:
+                # Update the status bar with progress
+                self.SetStatusText("Parsing library data: " + str(status_intervals[0]) + "% Complete.", status_bar_index)
+                status_intervals = status_intervals[1:]
+
+            if 'type' in line and line['type'] == 'library':
+                    if 'Name' in line:
+                        try:
+                            # print line
+                            libraries[line['Name'].strip()] = {}
+                            libraries[line['Name'].strip()]['address_execution'] = int(line['Strt'],16)
+                            libraries[line['Name'].strip()]['address_disk'] = int(line['Low'],16)
+                            libraries[line['Name'].strip()]['library_name'] = line['Name']
+                            libraries[line['Name'].strip()]['size_execution'] = int(line['High'],16) - int(line['Low'],16)
+                            libraries[line['Name'].strip()]['size_disk'] = int(line['High'],16) - int(line['Low'],16)
+                            # print "Render: " + str(stick_data[line['Name']])
+                            
+                        except KeyError as e:
+                            # print "Error: " + str(line)
+                            print "Library %s doesn't exist." % e
+                            print line
+                            print libraries.keys()
+                            print stick_data.keys()
+
+                        try:
+                            # print stick_data.keys()
+                            if line['Name'] not in libraries:
+                                print 'No library to insert stick data into'
+                            if line['Name'] not in stick_data:
+                                print 'No stick data'
+                            libraries[line['Name']].update(stick_data[line['Name']])
+                        except KeyError as e:
+                            print e
+                            print "Failed to update stick data"
+
+            row_count = row_count + 1
 
         status_intervals = [x for x in range(0, 101, 5)]
         row_count = 0
         for line in line_data:
-
             percent_done = 100.0 * row_count / len(line_data)
             if percent_done > status_intervals[0] or line == line_data[-1]:
                 # Update the status bar with progress
@@ -84,24 +172,35 @@ class Analyzer(object):
                 # self.results_grid.SetCellValue(row_count, 0, line['cnt']) # Instruction Count
                 # self.results_grid.SetCellValue(row_count, 0, row_count) # Disk Address
                 self.results_grid.SetCellValue(row_count, 1, line['adr']) # Execution Address
+
                 self.results_grid.SetCellValue(row_count, 2, line['dth']) # Depth
+                for library in libraries:
+                    if libraries[library]['address_execution'] <= int(line['adr'],16) and int(line['adr'],16) <= libraries[library]['address_execution'] + libraries[library]['size_execution']:
+                        self.results_grid.SetCellValue(row_count, 3, library) # Depth
+
+                        if 'exports' not in stick_data[library]:
+                            # print 'No exports in %s' % stick_data[library]
+                            continue
+
+                        for export in stick_data[library]['exports']:
+
+                            '''
+                            See if we found the symbol export. We need to remove ASLR so use the following equation to find it
+                            library_rva = execution_address - library_loaded_base
+                            if library_rva == export_rva, found it!
+                            '''
+                            # print "%s,%s,%s" % (int(line['adr'],16),libraries[library]['address_execution'],int(stick_data[library]['exports'][export],16))
+                            if int(line['adr'],16)-libraries[library]['address_execution'] == int(stick_data[library]['exports'][export],16):
+                                print 'found it! ' + str(export)
+                                self.results_grid.SetCellValue(row_count, 6, export) # System Call Name
+                                break
+                            
                 # self.results_grid.SetCellValue(row_count, 3, row_count) # Library Name
                 self.results_grid.SetCellValue(row_count, 4, line['tid']) # Thread ID
                 self.results_grid.SetCellValue(row_count, 5, line['tme']) # Time
-                # self.results_grid.SetCellValue(row_count, 6, row_count) # System Call Name
+                
 
                 row_count = row_count + 1
-
-            if 'type' in line and line['type'] == 'library':
-                if 'Name' in line:
-
-                    libraries[line['Name']] = {}
-                    libraries[line['Name']]['address_execution'] = line['Mapd']
-                    libraries[line['Name']]['address_disk'] = line['Low']
-                    libraries[line['Name']]['library_name'] = line['Name']
-                    libraries[line['Name']]['exports'] = []
-                    libraries[line['Name']]['size_execution'] = int(line['High'],16) - int(line['Low'],16)
-                    libraries[line['Name']]['size_disk'] = int(line['High'],16) - int(line['Low'],16)
                     
         self.library_name_field.Set(libraries.keys())
 
