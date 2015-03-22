@@ -133,7 +133,7 @@ class Analyzer(object):
                             libraries[line['Name'].strip()]['address_execution'] = int(line['Strt'],16)
                             libraries[line['Name'].strip()]['address_disk'] = int(line['Low'],16)
                             libraries[line['Name'].strip()]['library_name'] = line['Name']
-                            libraries[line['Name'].strip()]['size_execution'] = int(line['High'],16) - int(line['Low'],16)
+                            libraries[line['Name'].strip()]['size_execution'] = int(line['Mapd'],16)
                             libraries[line['Name'].strip()]['size_disk'] = int(line['High'],16) - int(line['Low'],16)
                             # print "Render: " + str(stick_data[line['Name']])
                             
@@ -170,17 +170,27 @@ class Analyzer(object):
                 
                 
                 # self.results_grid.SetCellValue(row_count, 0, line['cnt']) # Instruction Count
-                # self.results_grid.SetCellValue(row_count, 0, row_count) # Disk Address
+
                 self.results_grid.SetCellValue(row_count, 1, line['adr']) # Execution Address
 
                 self.results_grid.SetCellValue(row_count, 2, line['dth']) # Depth
                 for library in libraries:
-                    if libraries[library]['address_execution'] <= int(line['adr'],16) and int(line['adr'],16) <= libraries[library]['address_execution'] + libraries[library]['size_execution']:
-                        self.results_grid.SetCellValue(row_count, 3, library) # Depth
 
+                    if libraries[library]['address_execution'] <= int(line['adr'],16) and int(line['adr'],16) <= (libraries[library]['address_execution'] + libraries[library]['size_execution']):
+                        # This is the library this instruction is in 
+                        self.results_grid.SetCellValue(row_count, 3, library) # Library Name
+
+                        libraries[library]['address_disk'] = stick_data[library]['base']
+                        self.results_grid.SetCellValue(row_count, 0, format(int(line['adr'],16)-libraries[library]['address_execution']+stick_data[library]['base'],'X') ) # Disk Address
+
+                        # Check to see if this is an exported symbol
                         if 'exports' not in stick_data[library]:
                             # print 'No exports in %s' % stick_data[library]
                             continue
+                        # Library C:\Windows\SYSTEM32\ntdll.dll base at 6B280000 loaded at 77210000
+
+                        # print "Library %s base at %X loaded at %X" % (library , stick_data[library]['base'], libraries[library]['address_execution'])
+                        
 
                         for export in stick_data[library]['exports']:
 
@@ -194,8 +204,9 @@ class Analyzer(object):
                                 print 'found it! ' + str(export)
                                 self.results_grid.SetCellValue(row_count, 6, export) # System Call Name
                                 break
-                            
-                # self.results_grid.SetCellValue(row_count, 3, row_count) # Library Name
+
+                        continue
+
                 self.results_grid.SetCellValue(row_count, 4, line['tid']) # Thread ID
                 self.results_grid.SetCellValue(row_count, 5, line['tme']) # Time
                 
