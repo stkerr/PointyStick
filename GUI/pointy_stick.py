@@ -49,6 +49,7 @@ class Analyzer(object):
     def __init__(self, nop, title):
         super(Analyzer, self).__init__(nop, title=title)
         self.logfile_path = 'pintool.log'
+        self.selected_libraries = []
 
     def parse_line(self, line):
         fields = line.split('|')
@@ -77,114 +78,125 @@ class Analyzer(object):
         output = stick_result.stdout.read()
 
         stick_parser = StickParser()
-        stick_data = stick_parser.parse(output)
-        return stick_data
+        self.stick_data = stick_parser.parse(output)
 
     def load_logfile(self, e, status_bar_index=1):
         logfile = open(self.logfile_path, 'r')
-        data = logfile.readlines()
+        self.data = logfile.readlines()
+        logfile.close()
 
         self.results_grid.ClearGrid()
         self.library_name_field.Clear()
 
-        line_data = []
+        self.SetStatusText("Running Stick Utility...", status_bar_index)
+        self.run_stick_parser()
 
+        self.line_data = []
         status_intervals = [x for x in range(0, 101, 5)]
-
         data_file_count = 0
-        for row in data:
-            percent_done = 100.0 * data_file_count / len(data)
-            if percent_done > status_intervals[0] or row == data[-1]:
+        for row in self.data:
+            percent_done = 100.0 * data_file_count / len(self.data)
+            if percent_done > status_intervals[0] or row == self.data[-1]:
                 # Update the status bar with progress
                 self.SetStatusText("Parsing Status: " + str(status_intervals[0]) + "% Complete.", status_bar_index)
                 status_intervals = status_intervals[1:]
-
-            # self.SetStatusText(("Parsing Data line %s/%s" % (data_file_count, len(data))), status_bar_index)
-
             try:
-                line_data.append(self.parse_line(row))
+                self.line_data.append(self.parse_line(row))
             except Exception as e:
                 pass
 
             data_file_count = data_file_count + 1
+        self.line_data = filter(lambda x: x != {}, self.line_data)
 
-        line_data = filter(lambda x: x != {}, line_data)
-
-        self.results_grid.AppendRows(len(line_data))
-
-        self.SetStatusText("Running Stick Utility...", status_bar_index)
-        stick_data = self.run_stick_parser()
-
+        # Parse the libraries out
         status_intervals = [x for x in range(0, 101, 5)]
         row_count = 0
-        libraries = {}
-        for line in line_data:
-            percent_done = 100.0 * row_count / len(line_data)
-            if percent_done > status_intervals[0] or line == line_data[-1]:
+        self.libraries = {}
+        for line in self.line_data:
+            percent_done = 100.0 * row_count / len(self.line_data)
+            if percent_done > status_intervals[0] or line == self.line_data[-1]:
                 # Update the status bar with progress
                 self.SetStatusText("Parsing library data: " + str(status_intervals[0]) + "% Complete.", status_bar_index)
                 status_intervals = status_intervals[1:]
 
             if 'type' in line and line['type'] == 'library':
-                    if 'Name' in line:
-                        try:
-                            # print line
-                            libraries[line['Name'].strip()] = {}
-                            libraries[line['Name'].strip()]['address_execution'] = int(line['Strt'],16)
-                            libraries[line['Name'].strip()]['address_disk'] = int(line['Low'],16)
-                            libraries[line['Name'].strip()]['library_name'] = line['Name']
-                            libraries[line['Name'].strip()]['size_execution'] = int(line['Mapd'],16)
-                            libraries[line['Name'].strip()]['size_disk'] = int(line['High'],16) - int(line['Low'],16)
-                            # print "Render: " + str(stick_data[line['Name']])
-                            
-                        except KeyError as e:
-                            # print "Error: " + str(line)
-                            print "Library %s doesn't exist." % e
-                            print line
-                            print libraries.keys()
-                            print stick_data.keys()
+                if 'Name' in line:
+                    self.library_name_field.InsertItems([line['Name']], 0)
+                    try:
+                        # print line
+                        self.libraries[line['Name'].strip()] = {}
+                        self.libraries[line['Name'].strip()]['address_execution'] = int(line['Strt'],16)
+                        self.libraries[line['Name'].strip()]['address_disk'] = int(line['Low'],16)
+                        self.libraries[line['Name'].strip()]['library_name'] = line['Name']
+                        self.libraries[line['Name'].strip()]['size_execution'] = int(line['Mapd'],16)
+                        self.libraries[line['Name'].strip()]['size_disk'] = int(line['High'],16) - int(line['Low'],16)
+                        # print "Render: " + str(stick_data[line['Name']])
+                        
+                    except KeyError as e:
+                        # print "Error: " + str(line)
+                        print "Library %s doesn't exist." % e
+                        print line
+                        print self.libraries.keys()
+                        print stick_data.keys()
 
-                        try:
-                            # print stick_data.keys()
-                            if line['Name'] not in libraries:
-                                print 'No library to insert stick data into'
-                            if line['Name'] not in stick_data:
-                                print 'No stick data'
-                            libraries[line['Name']].update(stick_data[line['Name']])
-                        except KeyError as e:
-                            print e
-                            print "Failed to update stick data"
+                    try:
+                        # print stick_data.keys()
+                        if line['Name'] not in self.libraries:
+                            print 'No library to insert stick data into'
+                        if line['Name'] not in self.stick_data:
+                            print 'No stick data'
+                        self.libraries[line['Name']].update(self.stick_data[line['Name']])
+                    except KeyError as e:
+                        print e
+                        print "Failed to update stick data"
 
             row_count = row_count + 1
 
+        self.library_name_field.Set(self.libraries.keys())
+
+        self.update_display()
+
+    def update_display(self, status_bar_index=1):
+        print "selected libraries are " + str(self.selected_libraries)
         status_intervals = [x for x in range(0, 101, 5)]
         row_count = 0
-        for line in line_data:
-            percent_done = 100.0 * row_count / len(line_data)
-            if percent_done > status_intervals[0] or line == line_data[-1]:
+
+        try:
+            while self.results_grid.DeleteRows():
+                pass
+        except:
+            pass
+
+        self.results_grid.ClearGrid()
+        self.results_grid.AppendRows(1)
+        for line in self.line_data:
+            percent_done = 100.0 * row_count / len(self.line_data)
+            if percent_done > status_intervals[0] or line == self.line_data[-1]:
                 # Update the status bar with progress
                 self.SetStatusText("Display Status: " + str(status_intervals[0]) + "% Complete.", status_bar_index)
                 status_intervals = status_intervals[1:]
 
             if 'type' in line and line['type'] == 'instruction':
-                
-                
-                # self.results_grid.SetCellValue(row_count, 0, line['cnt']) # Instruction Count
-
                 self.results_grid.SetCellValue(row_count, 1, line['adr']) # Execution Address
-
                 self.results_grid.SetCellValue(row_count, 2, line['dth']) # Depth
-                for library in libraries:
 
-                    if libraries[library]['address_execution'] <= int(line['adr'],16) and int(line['adr'],16) <= (libraries[library]['address_execution'] + libraries[library]['size_execution']):
+                library_found = False
+                for library in self.libraries:
+                    
+                    if library not in self.selected_libraries:
+                        continue
+
+                    library_found = True
+
+                    if self.libraries[library]['address_execution'] <= int(line['adr'],16) and int(line['adr'],16) <= (self.libraries[library]['address_execution'] + self.libraries[library]['size_execution']):
                         # This is the library this instruction is in 
                         self.results_grid.SetCellValue(row_count, 3, library) # Library Name
 
-                        libraries[library]['address_disk'] = stick_data[library]['base']
-                        self.results_grid.SetCellValue(row_count, 0, format(int(line['adr'],16)-libraries[library]['address_execution']+stick_data[library]['base'],'X') ) # Disk Address
+                        self.libraries[library]['address_disk'] = self.stick_data[library]['base']
+                        self.results_grid.SetCellValue(row_count, 0, format(int(line['adr'],16)-self.libraries[library]['address_execution']+self.stick_data[library]['base'],'08X') ) # Disk Address
 
                         # Check to see if this is an exported symbol
-                        if 'exports' not in stick_data[library]:
+                        if 'exports' not in self.stick_data[library]:
                             # print 'No exports in %s' % stick_data[library]
                             continue
                         # Library C:\Windows\SYSTEM32\ntdll.dll base at 6B280000 loaded at 77210000
@@ -192,7 +204,7 @@ class Analyzer(object):
                         # print "Library %s base at %X loaded at %X" % (library , stick_data[library]['base'], libraries[library]['address_execution'])
                         
 
-                        for export in stick_data[library]['exports']:
+                        for export in self.stick_data[library]['exports']:
 
                             '''
                             See if we found the symbol export. We need to remove ASLR so use the following equation to find it
@@ -200,22 +212,24 @@ class Analyzer(object):
                             if library_rva == export_rva, found it!
                             '''
                             # print "%s,%s,%s" % (int(line['adr'],16),libraries[library]['address_execution'],int(stick_data[library]['exports'][export],16))
-                            if int(line['adr'],16)-libraries[library]['address_execution'] == int(stick_data[library]['exports'][export],16):
+                            if int(line['adr'],16)-self.libraries[library]['address_execution'] == int(self.stick_data[library]['exports'][export],16):
                                 print 'found it! ' + str(export)
                                 self.results_grid.SetCellValue(row_count, 6, export) # System Call Name
                                 break
+                        break
+                    else:
+                        library_found = False
 
-                        continue
+                if library_found == False:
+                    # row_count = max(0, row_count - 1)
+                    continue
 
                 self.results_grid.SetCellValue(row_count, 4, line['tid']) # Thread ID
                 self.results_grid.SetCellValue(row_count, 5, line['tme']) # Time
-                
 
+                self.results_grid.AppendRows(1)
                 row_count = row_count + 1
-                    
-        self.library_name_field.Set(libraries.keys())
-
-        logfile.close()
+        
 
 class Collector(object):
     def __init__(self, nop, title):
@@ -528,16 +542,21 @@ class PointyStickFrame(Collector, BasicUserInteraction, Analyzer, wx.Frame):
         system_calls_enabled = wx.CheckBox(filter_staticsize_panel)
 
         self.library_name_field_label = wx.StaticText(library_name_panel, -1, 'Library Name')
-        self.library_name_field = wx.ListBox(library_name_panel, style=wx.LB_MULTIPLE | wx.LB_SORT | wx.LB_HSCROLL)
+        self.library_name_field = wx.ListBox(library_name_panel, style=wx.LB_MULTIPLE | wx.LB_HSCROLL)
 
         thread_id_label = wx.StaticText(thread_id_panel, -1, 'Thread ID')
-        thread_id_field = wx.ListBox(thread_id_panel, size=(-1,-1), style=wx.LB_MULTIPLE | wx.LB_SORT | wx.LB_HSCROLL)
+        thread_id_field = wx.ListBox(thread_id_panel, size=(-1,-1), style=wx.LB_MULTIPLE | wx.LB_HSCROLL)
 
         filter_dynamic_sizer = wx.BoxSizer(wx.VERTICAL)
         filter_dynamic_sizer.Add(thread_id_label)
         filter_dynamic_sizer.Add(thread_id_field, flag=wx.EXPAND) 
         filter_dynamic_sizer.Add(self.library_name_field_label) 
         filter_dynamic_sizer.Add(self.library_name_field, flag=wx.EXPAND)
+        self.Bind(
+            wx.EVT_LISTBOX,
+            self.library_changed,
+            self.library_name_field
+        )
         self.sub_filter_splitter.SetSizer(filter_dynamic_sizer)
         self.sub_filter_splitter.Fit()
 
@@ -584,11 +603,18 @@ class PointyStickFrame(Collector, BasicUserInteraction, Analyzer, wx.Frame):
         threadid_sizer.Add(thread_id_field, proportion=1, flag=wx.EXPAND | wx.ALL, border=5)
         thread_id_panel.SetSizer(threadid_sizer)
 
+    def library_changed(self, e):
+        indexes = self.library_name_field.GetSelections()
+        self.selected_libraries = []
+        for i in indexes:
+            self.selected_libraries.append(self.library_name_field.GetString(i))
+        self.update_display()
 
     def get_instrumented_file(self, e):
         dialog = wx.FileDialog(self)
         dialog.ShowModal()
-        path = dialog.GetFilename()
+        path = dialog.GetPath()
+        print path
         self.set_instrumented_binary_path(path)
 
 app = wx.App(False)
